@@ -16,7 +16,7 @@ dependencies {
     implementation("org.jetbrains.compose.material3:material3:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
     implementation("io.grpc:grpc-netty-shaded:1.69.1")
-    implementation("io.grpc:grpc-protobuf:1.69.1")
+    implementation("io.grpc:grpc-protobuf:1.85.1")
     implementation("io.grpc:grpc-stub:1.69.1")
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.google.protobuf:protobuf-java:3.25.5")
