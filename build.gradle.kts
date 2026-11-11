@@ -19,7 +19,7 @@ dependencies {
     implementation("io.grpc:grpc-protobuf:1.85.1")
     implementation("io.grpc:grpc-stub:1.85.1")
     implementation("io.grpc:grpc-kotlin-stub:1.5.0")
-    implementation("com.google.protobuf:protobuf-java:3.25.5")
+    implementation("com.google.protobuf:protobuf-java:4.36.2")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.jetbrains.compose.ui:ui-test-junit4:1.12.2")
@@ -30,7 +30,7 @@ dependencies {
 }
 
 protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:3.25.5" }
+    protoc { artifact = "com.google.protobuf:protoc:4.36.2" }
     plugins {
         create("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.85.1" }
         create("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.5.0:jdk8@jar" }
