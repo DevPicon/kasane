@@ -1,0 +1,53 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify tag matches application version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/^appVersion=//p' gradle.properties)
+          [[ "$RELEASE_TAG" == "v$version" ]]
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+  tests:
+    needs: version
+    uses: ./.github/workflows/tests.yml
+  build:
+    needs: [version, tests]
+    uses: ./.github/workflows/build.yml
+  release:
+    needs: [tests, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: kasane-macos-*
+          path: dist
+          merge-multiple: true
+      - name: Publish verified release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          (cd dist && for checksum in *.sha256; do sha256sum -c "$checksum"; done)
+          gh release create "$RELEASE_TAG" dist/* --verify-tag --title "Kasane $RELEASE_TAG" --notes-file docs/release-notes.md

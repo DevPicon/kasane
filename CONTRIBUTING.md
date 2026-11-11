@@ -1,0 +1,17 @@
+# Contributing to Kasane
+
+Kasane is maintained by Armando Picón (@devpicon). It is currently private, with no project license. Coordinate proposed contributions with the author before submitting code. Access to this repository does not grant a general license to redistribute it.
+
+For a bug, include reproducible steps, Kasane version, macOS version/architecture, Emulator version, AVD profile and Android API. Never attach endpoint registration files or gRPC tokens. Remove private application data from screenshots and logs.
+
+Keep changes focused. Separate UI/state coordination, platform tools and domain rules; use suspending APIs below the UI boundary and preserve cancellation. Device capabilities come from metadata rather than device names.
+
+Use JDK 17 and run:
+
+```sh
+./gradlew test createDistributable --console=plain
+```
+
+Tests must use temporary SDK/AVD fixtures. Changes to emulator behavior also need an explicit real-device walkthrough with observed results and limitations. Test success does not establish that a real emulator boots on every supported Mac.
+
+For visible changes, include a screenshot without private data. Explain the user-facing change, verification and remaining risks in the pull request. Keep planning documents, assistant instructions/state, SDK installations, credentials, generated files and binaries out of Git. Distribution files belong in Actions artifacts and Releases.
