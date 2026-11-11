@@ -22,7 +22,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java:3.25.5")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.jetbrains.compose.ui:ui-test-junit4:1.10.3")
+    testImplementation("org.jetbrains.compose.ui:ui-test-junit4:1.12.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
