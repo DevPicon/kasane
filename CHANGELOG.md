@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Set the macOS Dock icon explicitly at startup, including direct launcher and development runs.
+
 - Update Compose Desktop and its UI test library together to 1.12.2; preserve physical Home key navigation using the corrected key mapping.
 - Align gRPC Java runtime and code generation at 1.85.1, and Kotlin runtime/code generation at 1.5.0.
 - Group future Dependabot updates by Compose, gRPC and Protobuf families.
