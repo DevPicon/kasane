@@ -16,7 +16,7 @@ This metadata finalization happens **before** any future Developer ID signing. I
 
 ## CI and release process
 
-`Tests` and `Build` run on main and pull requests. Tests include the version contract and Kotlin/Compose tests. Build produces separate Apple Silicon and Intel ZIPs containing `Android Emulator Hub.app`, plus SHA-256 checksums. Actions artifacts/test reports are retained for 14 days; Releases hold durable downloads.
+`Tests` and `Build` run on main and pull requests. Tests include the version contract and Kotlin/Compose tests. Build produces separate Apple Silicon and Intel ZIPs containing `Android Emulator Hub.app`, plus read-only test DMGs and SHA-256 checksums. Actions artifacts/test reports are retained for 14 days; Releases hold durable downloads.
 
 1. Change `appVersion` and increment `macBundleVersion`. Update the changelog, release notes and README's current preview.
 2. From a feature branch, run:

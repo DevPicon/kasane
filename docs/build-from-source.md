@@ -46,3 +46,9 @@ Normal builds do not require that renderer. Keep the vector and generated assets
 `appVersion` is public SemVer; `macBundleVersion` is a separate positive, increasing build counter. JDK 17's macOS packager requires a positive internal app-version. The build finalizes the bundle with the product's numeric short version and full prerelease metadata, then refreshes and verifies its ad-hoc signature. This is not Developer ID signing and does not produce notarization.
 
 The finalizer refuses to alter a bundle already signed with an identity. Any later Developer ID signing must happen after metadata finalization. See [release policy](releases.md) and [signing setup](macos-signing.md).
+
+## Private test DMG
+
+Run `./gradlew packageTestDmg` on macOS. It wraps the finalized, ad-hoc signed app in a compressed read-only disk image for the host architecture, verifies it with `hdiutil verify`, and writes a SHA-256 file alongside it under `build/dmg/`. The volume contains the app, an Applications shortcut and test instructions. No Android SDK, system images or AVDs are bundled. The image is for private evaluation and is not Developer ID signed or notarized.
+
+Install by dragging the app to Applications, ejecting the image and opening the installed copy. The full version and author appear under Help → Acerca de… and the native macOS About menu.

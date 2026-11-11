@@ -42,15 +42,17 @@ Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The i
 
 ## Install the current macOS alpha
 
-Current development version: **0.1.0-alpha.1**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
+Current development version: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
 
 1. Open [Releases](https://github.com/DevPicon/kasane/releases) and choose the newest alpha.
-2. Download `kasane-<version>-macos-arm64.zip` for Apple Silicon, or `kasane-<version>-macos-x64.zip` for an Intel Mac. **About This Mac** identifies your chip.
+2. Download the DMG for your Mac: `kasane-<version>-macos-arm64.dmg` for Apple Silicon or `kasane-<version>-macos-x64.dmg` for Intel. ZIP alternatives are also available. **About This Mac** identifies your chip.
 3. Optionally verify the archive with its matching `.sha256` file:
    ```sh
-   shasum -a 256 -c kasane-<version>-macos-arm64.zip.sha256
+   shasum -a 256 -c kasane-<version>-macos-arm64.dmg.sha256
    ```
-4. Extract the ZIP, move **Android Emulator Hub.app** to **Applications**, and open it.
+4. Open the DMG, drag **Android Emulator Hub.app** to **Applications**, eject the volume, and open the installed app. For ZIP downloads, extract the archive and move the app to Applications.
+
+The full version and authorship appear under **Help → Acerca de…** or the native macOS About menu.
 
 Packages include their Java runtime. The preview is **not Developer ID signed or notarized**. macOS may block it; after verifying the source, use the explicit approval in **System Settings → Privacy & Security** as described by [Apple](https://support.apple.com/en-us/102445). Do not disable Gatekeeper globally.
 

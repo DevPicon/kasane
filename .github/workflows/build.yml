@@ -35,7 +35,7 @@ jobs:
       - name: Validate version contract
         run: python3 scripts/check-version.py
       - name: Package application
-        run: ./gradlew createDistributable --no-daemon --console=plain
+        run: ./gradlew packageTestDmg --no-daemon --console=plain
       - name: Archive and checksum
         env:
           KASANE_ARCH: ${{ matrix.arch }}
@@ -44,6 +44,7 @@ jobs:
           version=$(sed -n 's/^appVersion=//p' gradle.properties)
           product=$(sed -n 's/^appDisplayName=//p' gradle.properties)
           mkdir -p dist
+          cp build/dmg/*.dmg build/dmg/*.sha256 dist/
           archive="kasane-${version}-macos-${KASANE_ARCH}.zip"
           ditto -c -k --sequesterRsrc --keepParent "build/compose/binaries/main/app/$product.app" "dist/$archive"
           (cd dist && shasum -a 256 "$archive" > "$archive.sha256")
