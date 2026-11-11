@@ -25,9 +25,17 @@ import dev.picon.androidhub.infrastructure.MacSystemImageRepository
 import dev.picon.androidhub.presentation.SystemImagesController
 import dev.picon.androidhub.presentation.SystemImagesAction
 import dev.picon.androidhub.presentation.SystemImagesDialog
+import dev.picon.androidhub.presentation.ProductInfo
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import org.jetbrains.skia.Image
 import java.awt.Desktop
 
 fun main() = application {
+    val appIcon = remember {
+        val bytes = checkNotNull(ProductInfo::class.java.getResourceAsStream("/hub-icon.png")).use { it.readBytes() }
+        BitmapPainter(Image.makeFromEncoded(bytes).toComposeImageBitmap())
+    }
     val images = remember { SystemImagesController(MacSystemImageRepository()) }
     val creation = remember { AvdCreationController(MacAvdCreator()) }
     val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics()) { images.cancelAndAwait(); creation.cancelAndAwait() } }
@@ -43,7 +51,8 @@ fun main() = application {
     }
     Window(
         onCloseRequest = { controller.dispatch(HubAction.Close) },
-        title = "Kasane",
+        title = ProductInfo.displayName,
+        icon = appIcon,
         state = rememberWindowState(width = 1200.dp, height = 800.dp),
     ) {
         LaunchedEffect(controller) { controller.run() }

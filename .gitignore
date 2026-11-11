@@ -26,3 +26,11 @@ release-private-notes.md
 *.pem
 .env
 .env.*
+
+# Signing material stays in Keychain / CI secrets.
+*.p8
+*.key
+*.cer
+*.mobileprovision
+*.provisionprofile
+__pycache__/

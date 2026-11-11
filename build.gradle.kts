@@ -45,15 +45,30 @@ protobuf {
     }
 }
 
+val productVersion = providers.gradleProperty("appVersion").get()
+val productName = providers.gradleProperty("appDisplayName").get()
+val macBuild = providers.gradleProperty("macBundleVersion").get()
+val validateVersion by tasks.registering(Exec::class) {
+    commandLine("python3", project.file("scripts/check-version.py").absolutePath)
+    inputs.files("gradle.properties", "scripts/check-version.py")
+}
+tasks.named("test") { dependsOn(validateVersion) }
+
 compose.desktop {
     application {
         mainClass = "dev.picon.androidhub.MainKt"
+        jvmArgs += listOf("-Dkasane.version=$productVersion", "-Dkasane.displayName=$productName")
         nativeDistributions {
-            packageName = "Kasane"
-            packageVersion = providers.gradleProperty("appVersion").get()
+            packageName = productName
+            packageVersion = macBuild
             vendor = "Armando Picón (@devpicon)"
             description = "A macOS hub for Android emulators"
-            macOS { bundleID = "dev.picon.kasane" }
+            macOS {
+                bundleID = "dev.picon.kasane"
+                packageBuildVersion = macBuild
+                iconFile.set(project.file("assets/icons/hub.icns"))
+                infoPlist { extraKeysRawXml = "<key>KasaneSemanticVersion</key><string>$productVersion</string>" }
+            }
         }
     }
 }
@@ -67,4 +82,20 @@ tasks.register<JavaExec>("probe") {
     if (providers.gradleProperty("exercise").orNull == "true") args("--exercise")
     if (providers.gradleProperty("controls").orNull == "true") args("--controls")
     providers.gradleProperty("serial").orNull?.let { args("--serial", it) }
+}
+
+// jpackage 17 validates its numeric app-version before reading the custom plist.
+// Finalize public metadata and refresh the ad-hoc signature before distribution signing.
+tasks.matching { it.name == "createDistributable" }.configureEach {
+    dependsOn(validateVersion)
+    inputs.file("scripts/finalize-macos-bundle.py")
+    inputs.property("semanticVersion", productVersion)
+    doLast {
+        val result = providers.exec {
+            commandLine("python3", project.file("scripts/finalize-macos-bundle.py").absolutePath,
+                layout.buildDirectory.dir("compose/binaries/main/app/$productName.app").get().asFile.absolutePath)
+        }
+        result.result.get().assertNormalExitValue()
+        logger.lifecycle(result.standardOutput.asText.get().trim())
+    }
 }

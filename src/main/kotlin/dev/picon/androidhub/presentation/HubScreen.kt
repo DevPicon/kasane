@@ -79,7 +79,7 @@ fun HubScreen(
         }) {
             Column(Modifier.width(260.dp).fillMaxHeight().background(surface).padding(16.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Kasane", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                    Text(ProductInfo.shortName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                     TextButton(enabled = !state.closing && state.deleteTarget == null, onClick = onCreate, contentPadding = PaddingValues(4.dp)) { Text("+ Crear") }
                 }
                 Spacer(Modifier.height(32.dp))
@@ -97,7 +97,7 @@ fun HubScreen(
                     }
                 }
                 TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { Text("Actualizar emuladores") }
-                Text("Preview · transporte propio", fontSize = 11.sp, color = secondary)
+                Text("Alpha · ${ProductInfo.version}", fontSize = 11.sp, color = secondary)
             }
             VerticalDivider(color = Color(0xFFCFD3D9))
             Column(Modifier.weight(1f).fillMaxHeight()) {
