@@ -68,6 +68,8 @@ fun HubScreen(
         onSurface = Color(0xFF202124),
     )) {
         AvdDeletionDialog(state.deleteTarget, state.deleting, state.deleteError, onAction)
+        DiagnosticDialog(state.diagnostic, !state.closing && state.diagnostic?.checking == false && state.diagnostic.deviceId == state.selectedDeviceId &&
+            selectedDevice?.status == DeviceStatus.READY && selectedDevice.running?.instanceId == state.diagnostic.instanceId, onAction)
         Row(Modifier.fillMaxSize().background(background).onPreviewKeyEvent { event ->
             if (event.key == Key.Tab && event.type == KeyEventType.KeyDown) {
                 inputMode.requestInputMode(InputMode.Keyboard)
@@ -90,7 +92,8 @@ fun HubScreen(
                                 onSelect = { onAction(HubAction.SelectDevice(emulator.id)) },
                                 onDelete = { onAction(HubAction.RequestDelete(emulator.id)) },
                                 onStop = { onAction(HubAction.Stop(emulator.id)) },
-                                onRestart = { onAction(HubAction.Restart(emulator.id)) }))
+                                onRestart = { onAction(HubAction.Restart(emulator.id)) },
+                                onDiagnose = { onAction(HubAction.Diagnose(emulator.id)) }))
                     }
                 }
                 TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { Text("Actualizar emuladores") }
@@ -123,6 +126,9 @@ fun HubScreen(
                                 Button(onClick = { selectedDevice?.let { onAction(HubAction.Start(it.id)) } }) { Text("Iniciar emulador") }
                             } else if (!state.connecting && !state.closing && state.selected != null) {
                                 OutlinedButton(onClick = { onAction(HubAction.Select(state.selected)) }) { Text("Volver a conectar") }
+                            }
+                            if (!state.closing && !state.connecting && selectedDevice != null) {
+                                TextButton(onClick = { onAction(HubAction.Diagnose(selectedDevice.id)) }) { Text("Diagnóstico…") }
                             }
                         }
                     }

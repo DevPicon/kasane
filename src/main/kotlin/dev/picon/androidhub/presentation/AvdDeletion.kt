@@ -22,6 +22,7 @@ internal data class DeviceInventoryActions(
     val onDelete: () -> Unit,
     val onStop: () -> Unit = {},
     val onRestart: () -> Unit = {},
+    val onDiagnose: () -> Unit = {},
 )
 
 @Composable
@@ -34,6 +35,7 @@ internal fun DeviceInventoryRow(device: AvailableEmulator, selected: Boolean, en
                 add(ContextMenuItem("Apagar", actions.onStop))
                 add(ContextMenuItem("Reiniciar", actions.onRestart))
             }
+            add(ContextMenuItem("Diagnóstico…", actions.onDiagnose))
             if (device.canDelete()) add(ContextMenuItem("Eliminar…", actions.onDelete))
         }
     }) {
@@ -56,6 +58,7 @@ internal fun DeviceInventoryRow(device: AvailableEmulator, selected: Boolean, en
                         DropdownMenuItem(text = { Text("Apagar") }, onClick = { options = false; actions.onStop() })
                         DropdownMenuItem(text = { Text("Reiniciar") }, onClick = { options = false; actions.onRestart() })
                     }
+                    DropdownMenuItem(text = { Text("Diagnóstico…") }, enabled = !device.powerPending(), onClick = { options = false; actions.onDiagnose() })
                     DropdownMenuItem(text = { Text(if (device.canDelete()) "Eliminar…" else if (device.powerPending()) "Operación en curso…" else "Apaga el emulador para eliminarlo") },
                         enabled = device.canDelete(), onClick = { options = false; actions.onDelete() })
                 }

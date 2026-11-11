@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import dev.picon.androidhub.infrastructure.MacTransportDiagnostics
 import dev.picon.androidhub.infrastructure.MacEmulatorDiscovery
 import dev.picon.androidhub.infrastructure.MacEmulatorInventory
 import dev.picon.androidhub.infrastructure.readReduceMotion
@@ -29,7 +30,7 @@ import java.awt.Desktop
 fun main() = application {
     val images = remember { SystemImagesController(MacSystemImageRepository()) }
     val creation = remember { AvdCreationController(MacAvdCreator()) }
-    val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery())) { images.cancelAndAwait(); creation.cancelAndAwait() } }
+    val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics()) { images.cancelAndAwait(); creation.cancelAndAwait() } }
     val reduceMotion by produceState(false) { value = readReduceMotion() }
     DisposableEffect(controller) {
         val desktop = Desktop.getDesktop()

@@ -60,7 +60,7 @@ class MacEmulatorDiscovery(
         if (!stopped) throw SessionFailure("La instancia no terminó dentro del plazo de apagado.")
     }
 
-    private suspend fun endpoints(): List<EmulatorEndpoint> = withContext(Dispatchers.IO) {
+    internal suspend fun endpoints(): List<EmulatorEndpoint> = withContext(Dispatchers.IO) {
         if (!Files.isDirectory(directory)) return@withContext emptyList()
         Files.list(directory).use { paths ->
             paths.filter { it.fileName.toString().matches(Regex("pid_\\d+\\.ini")) }
