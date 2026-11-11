@@ -86,8 +86,11 @@ fun HubScreen(
                 LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(state.devices, key = { it.id }) { emulator ->
                         DeviceInventoryRow(emulator, state.selectedDeviceId == emulator.id, !state.closing && !state.deleting,
-                            onSelect = { onAction(HubAction.SelectDevice(emulator.id)) },
-                            onDelete = { onAction(HubAction.RequestDelete(emulator.id)) })
+                            actions = DeviceInventoryActions(
+                                onSelect = { onAction(HubAction.SelectDevice(emulator.id)) },
+                                onDelete = { onAction(HubAction.RequestDelete(emulator.id)) },
+                                onStop = { onAction(HubAction.Stop(emulator.id)) },
+                                onRestart = { onAction(HubAction.Restart(emulator.id)) }))
                     }
                 }
                 TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { Text("Actualizar emuladores") }
@@ -101,9 +104,12 @@ fun HubScreen(
                         Text(listOfNotNull(selectedDevice?.api?.takeIf { it.isNotBlank() }?.let { "API $it" }, state.selected?.serial, state.posture?.label()).joinToString(" · ").ifEmpty { "macOS" }, fontSize = 12.sp, color = secondary)
                     }
                     if (state.connected && !state.closing) Text("●  Listo", color = accent, fontSize = 13.sp)
-                    if (state.connecting || state.closing || selectedDevice?.status == DeviceStatus.STARTING) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                    if (state.connecting || state.closing || selectedDevice?.status in setOf(DeviceStatus.STARTING, DeviceStatus.STOPPING, DeviceStatus.RESTARTING)) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 }
                 HorizontalDivider(color = Color(0xFFCFD3D9))
+                state.powerErrors[state.selectedDeviceId]?.let { message ->
+                    Text(message, Modifier.padding(horizontal = 24.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                }
                 Box(Modifier.weight(1f).fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     if (state.connected && !state.closing && state.closeError == null && state.selected != null) {
                         EmulatorDisplay(state, frames, onAction, reduceMotion)
@@ -113,7 +119,7 @@ fun HubScreen(
                             if (state.closeError != null) {
                                 Text(state.closeError, color = MaterialTheme.colorScheme.error)
                                 OutlinedButton(onClick = { onAction(HubAction.Close) }) { Text("Reintentar apagado") }
-                            } else if (!state.closing && selectedDevice?.status in listOf(DeviceStatus.OFF, DeviceStatus.ERROR)) {
+                            } else if (!state.closing && selectedDevice?.running == null && selectedDevice?.status in listOf(DeviceStatus.OFF, DeviceStatus.ERROR)) {
                                 Button(onClick = { selectedDevice?.let { onAction(HubAction.Start(it.id)) } }) { Text("Iniciar emulador") }
                             } else if (!state.connecting && !state.closing && state.selected != null) {
                                 OutlinedButton(onClick = { onAction(HubAction.Select(state.selected)) }) { Text("Volver a conectar") }
@@ -254,6 +260,8 @@ internal fun keyboardAction(serial: String, event: KeyEvent, surface: DisplaySur
 internal fun DeviceStatus.label(): String = when (this) {
     DeviceStatus.OFF -> "Apagado"
     DeviceStatus.STARTING -> "Iniciando"
+    DeviceStatus.STOPPING -> "Apagando"
+    DeviceStatus.RESTARTING -> "Reiniciando"
     DeviceStatus.READY -> "Listo"
     DeviceStatus.ERROR -> "Error"
 }

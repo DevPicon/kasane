@@ -248,7 +248,8 @@ private class FakeEmulators(fail: Boolean = false, private val extra: RunningEmu
     var bootReady = false
     var startFails = false
     private var started = false
-    override suspend fun discover() = listOfNotNull(device, extra)
+    private val terminated = mutableSetOf<String>()
+    override suspend fun discover() = listOfNotNull(device, extra).filter { it.instanceId !in terminated }
     override suspend fun list(): List<AvailableEmulator> = if (device.avdId in deleted) emptyList() else if (offline) {
         listOf(AvailableEmulator("Test_AVD", device.name, "36.1",
             if (!started) DeviceStatus.OFF else if (bootReady) DeviceStatus.READY else DeviceStatus.STARTING,
@@ -261,6 +262,7 @@ private class FakeEmulators(fail: Boolean = false, private val extra: RunningEmu
         startCalls++
         if (startFails) throw SessionFailure("Falta el SDK de Android.")
         started = true
+        terminated -= device.instanceId
         return device
     }
     override suspend fun connect(serial: String): EmulatorSession {
@@ -270,6 +272,8 @@ private class FakeEmulators(fail: Boolean = false, private val extra: RunningEmu
     override suspend fun stop(emulator: RunningEmulator) {
         stopped += emulator
         if (emulator.serial == failStop) throw SessionFailure("No se pudo apagar la instancia.")
+        terminated += emulator.instanceId
+        started = false
     }
 }
 

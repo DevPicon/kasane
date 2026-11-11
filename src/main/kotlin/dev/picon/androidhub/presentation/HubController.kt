@@ -35,6 +35,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.currentCoroutineContext
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Image
@@ -58,6 +60,7 @@ data class HubUiState(
     val deleteTarget: AvailableEmulator? = null,
     val deleting: Boolean = false,
     val deleteError: String? = null,
+    val powerErrors: Map<String, String> = emptyMap(),
 )
 
 data class RenderedFrame(val serial: String, val bitmap: ImageBitmap, val surface: DisplaySurface)
@@ -69,6 +72,9 @@ sealed interface HubAction {
     data object Refresh : HubAction
     data object Close : HubAction
     data class SelectDevice(val id: String) : HubAction
+    data class Stop(val id: String) : HubAction
+    data class Restart(val id: String) : HubAction
+    data class PowerFinished(val id: String, val token: Long, val previousInstanceId: String, val instance: RunningEmulator?, val error: String?) : HubAction
     data class Start(val id: String) : HubAction
     data class Created(val id: String) : HubAction
     data class InventoryLoaded(val generation: Long, val devices: List<AvailableEmulator>) : HubAction
@@ -79,7 +85,7 @@ sealed interface HubAction {
     data class Text(val serial: String, val text: String, val surface: DisplaySurface? = null) : HubAction
     data class Release(val serial: String) : HubAction
     data class Control(val instanceId: String, val command: EmulatorCommand, val surface: DisplaySurface) : HubAction
-    data class Failed(val serial: String, val message: String) : HubAction
+    data class Failed(val instanceId: String, val message: String) : HubAction
 }
 
 /** UI event boundary. run() is owned and cancelled by the window's LaunchedEffect. */
@@ -105,6 +111,8 @@ class HubController(private val emulators: EmulatorInventory, private val before
         var streaming: Job? = null
         var refreshing: Job? = null
         var inventoryGeneration = 0L
+        var powerGeneration = 0L
+        val powerOperations = mutableMapOf<String, PowerOperation>()
         val polling = launch {
             while (isActive) {
                 delay(2000)
@@ -134,6 +142,59 @@ class HubController(private val emulators: EmulatorInventory, private val before
                 if (mutableState.value.closing && action != HubAction.Close) continue
                 try {
                     when (action) {
+                        is HubAction.Stop, is HubAction.Restart -> {
+                            val restart = action is HubAction.Restart
+                            val id = if (action is HubAction.Stop) action.id else (action as HubAction.Restart).id
+                            if (id in powerOperations || mutableState.value.deleteTarget != null) continue
+                            val device = mutableState.value.devices.firstOrNull { it.id == id } ?: continue
+                            val expected = device.running ?: continue
+                            inventoryGeneration++
+                            refreshing?.cancelAndJoin()
+                            val selected = mutableState.value.selectedDeviceId == id
+                            if (selected) withContext(NonCancellable) { disconnect() }
+                            mutableState.update { current -> current.copy(
+                                selected = if (selected) null else current.selected,
+                                connected = if (selected) false else current.connected,
+                                connecting = if (selected) false else current.connecting,
+                                powerErrors = current.powerErrors - id,
+                                message = if (selected) (if (restart) "Reiniciando emulador…" else "Apagando emulador…") else current.message,
+                                devices = current.devices.map { if (it.id == id) it.copy(status = if (restart) DeviceStatus.RESTARTING else DeviceStatus.STOPPING, error = null) else it }) }
+                            val token = ++powerGeneration
+                            val job = launch {
+                                try {
+                                    val fresh = emulators.list().firstOrNull { it.id == id }?.running
+                                    if (fresh != null && fresh.instanceId != expected.instanceId) throw SessionFailure("La instancia cambió. Actualiza el inventario antes de actuar sobre ella.")
+                                    emulators.stop(expected)
+                                    currentCoroutineContext().ensureActive()
+                                    val remaining = emulators.list().firstOrNull { it.id == id }?.running
+                                    if (remaining != null) throw SessionFailure("No se confirmó el apagado, o hay una instancia nueva. No se iniciará otra.")
+                                    val next = if (restart && !mutableState.value.closing) {
+                                        currentCoroutineContext().ensureActive()
+                                        emulators.start(id)
+                                    } else null
+                                    dispatch(HubAction.PowerFinished(id, token, expected.instanceId, next, null))
+                                } catch (error: CancellationException) { throw error }
+                                catch (error: Exception) { dispatch(HubAction.PowerFinished(id, token, expected.instanceId, null, userMessage(error))) }
+                            }
+                            powerOperations[id] = PowerOperation(token, restart, job)
+                        }
+                        is HubAction.PowerFinished -> {
+                            if (powerOperations[action.id]?.token != action.token) continue
+                            powerOperations.remove(action.id)
+                            inventoryGeneration++
+                            refreshing?.cancelAndJoin()
+                            mutableState.update { current ->
+                                val selected = current.selectedDeviceId == action.id
+                                current.copy(powerErrors = if (action.error == null) current.powerErrors - action.id else current.powerErrors + (action.id to action.error),
+                                    devices = current.devices.map { device ->
+                                    if (device.id != action.id) device else if (action.error != null) device.copy(status = DeviceStatus.ERROR, error = action.error)
+                                    else if (device.running != null && device.running.instanceId != action.previousInstanceId && action.instance == null) device
+                                    else device.copy(status = if (action.instance == null) DeviceStatus.OFF else DeviceStatus.STARTING, running = action.instance, error = null)
+                                }, emulators = if (action.error != null) current.emulators else current.emulators.filterNot { it.instanceId == action.previousInstanceId } + listOfNotNull(action.instance),
+                                    message = if (selected) action.error ?: if (action.instance != null) "Iniciando Android…" else "Emulador apagado." else current.message)
+                            }
+                            dispatch(HubAction.Refresh)
+                        }
                         is HubAction.RequestDelete -> {
                             val target = mutableState.value.devices.firstOrNull { it.id == action.id && it.canDelete() } ?: continue
                             mutableState.update { it.copy(deleteTarget = target, deleteError = null) }
@@ -166,10 +227,17 @@ class HubController(private val emulators: EmulatorInventory, private val before
                         }
                         HubAction.Close -> {
                             beforeClose()
+                            powerOperations.values.forEach { it.job.cancel() }
+                            powerOperations.values.forEach { it.job.join() }
+                            powerOperations.clear()
                             inventoryGeneration++
                             refreshing?.cancelAndJoin()
                             withContext(NonCancellable) { disconnect() }
-                            val failures = mutableState.value.emulators.distinctBy { it.instanceId }.map { emulator ->
+                            var inventoryError: String? = null
+                            val fresh = try { emulators.list().mapNotNull { it.running } }
+                            catch (error: CancellationException) { throw error }
+                            catch (error: Exception) { inventoryError = userMessage(error); emptyList() }
+                            val failures = (mutableState.value.emulators + fresh).distinctBy { it.instanceId }.map { emulator ->
                                 async {
                                     try {
                                         emulators.stop(emulator)
@@ -181,7 +249,7 @@ class HubController(private val emulators: EmulatorInventory, private val before
                                     }
                                 }
                             }.awaitAll().filterNotNull()
-                            if (failures.isEmpty()) {
+                            if (failures.isEmpty() && inventoryError == null) {
                                 mutableState.update { it.copy(closing = false, closed = true, connected = false, emulators = emptyList()) }
                                 break
                             }
@@ -189,7 +257,7 @@ class HubController(private val emulators: EmulatorInventory, private val before
                                 it.copy(closing = false, connecting = false, connected = false,
                                     emulators = failures.map { failure -> failure.first },
                                     selected = it.selected?.takeIf { selected -> failures.any { failure -> failure.first == selected } },
-                                    closeError = failures.joinToString("\n") { failure -> "${failure.first.name}. ${failure.second}" },
+                                    closeError = (failures.map { failure -> "${failure.first.name}. ${failure.second}" } + listOfNotNull(inventoryError)).joinToString("\n"),
                                     message = "No se pudieron apagar todos los emuladores.")
                             }
                         }
@@ -222,7 +290,9 @@ class HubController(private val emulators: EmulatorInventory, private val before
                             val current = mutableState.value
                             val devices = action.devices.map { device ->
                                 val previous = current.devices.firstOrNull { it.id == device.id }
-                                if (device.status == DeviceStatus.OFF && previous?.status == DeviceStatus.ERROR) {
+                                val operation = powerOperations[device.id]
+                                if (operation != null) device.copy(status = if (operation.restart) DeviceStatus.RESTARTING else DeviceStatus.STOPPING)
+                                else if (device.status == DeviceStatus.OFF && previous?.status == DeviceStatus.ERROR) {
                                     device.copy(status = DeviceStatus.ERROR, error = previous.error)
                                 } else device
                             }
@@ -236,6 +306,8 @@ class HubController(private val emulators: EmulatorInventory, private val before
                                     connecting = if (instanceChanged) false else it.connecting,
                                     message = when (selected?.status) {
                                         DeviceStatus.OFF -> "Emulador apagado."
+                                        DeviceStatus.STOPPING -> "Apagando emulador…"
+                                        DeviceStatus.RESTARTING -> "Reiniciando emulador…"
                                         DeviceStatus.STARTING -> "Iniciando Android…"
                                         DeviceStatus.ERROR -> selected.error ?: "No se pudo iniciar el emulador."
                                         else -> if (devices.isEmpty()) "No hay AVD configurados. Usa + Crear para agregar uno." else it.message
@@ -243,7 +315,7 @@ class HubController(private val emulators: EmulatorInventory, private val before
                             }
                             if (current.selectedDeviceId == null && devices.isNotEmpty()) {
                                 dispatch(HubAction.SelectDevice(devices.first().id))
-                            } else if (selected?.status == DeviceStatus.READY && selected.running != null && mutableState.value.selected == null) {
+                            } else if (selected?.status == DeviceStatus.READY && selected.running != null && mutableState.value.selected == null && selected.id !in powerOperations) {
                                 dispatch(HubAction.Select(selected.running))
                             }
                         }
@@ -254,6 +326,8 @@ class HubController(private val emulators: EmulatorInventory, private val before
                                 connected = false, connecting = false, posture = null, closeError = null,
                                 message = when (device.status) {
                                     DeviceStatus.OFF -> "Emulador apagado."
+                                    DeviceStatus.STOPPING -> "Apagando emulador…"
+                                    DeviceStatus.RESTARTING -> "Reiniciando emulador…"
                                     DeviceStatus.STARTING -> "Iniciando Android…"
                                     DeviceStatus.ERROR -> device.error ?: "No se pudo iniciar el emulador."
                                     DeviceStatus.READY -> "Conectando…"
@@ -263,7 +337,7 @@ class HubController(private val emulators: EmulatorInventory, private val before
                         is HubAction.Start -> {
                             if (mutableState.value.deleteTarget != null) continue
                             val device = mutableState.value.devices.firstOrNull { it.id == action.id } ?: continue
-                            if (device.status == DeviceStatus.STARTING || device.status == DeviceStatus.READY) continue
+                            if (device.running != null || device.id in powerOperations || device.status == DeviceStatus.STARTING || device.status == DeviceStatus.READY) continue
                             inventoryGeneration++
                             refreshing?.cancelAndJoin()
                             withContext(NonCancellable) { disconnect() }
@@ -287,7 +361,7 @@ class HubController(private val emulators: EmulatorInventory, private val before
                         }
                         is HubAction.Select -> {
                             val deviceId = mutableState.value.devices.firstOrNull { it.running?.instanceId == action.emulator.instanceId }?.id
-                            if (deviceId != mutableState.value.selectedDeviceId) continue
+                            if (deviceId != mutableState.value.selectedDeviceId || deviceId in powerOperations) continue
                             withContext(NonCancellable) { disconnect() }
                             mutableState.update {
                                 it.copy(selected = action.emulator, connecting = true, connected = false, message = "Conectando…", posture = null, closeError = null)
@@ -308,11 +382,11 @@ class HubController(private val emulators: EmulatorInventory, private val before
                                 } catch (error: CancellationException) {
                                     throw error
                                 } catch (error: Exception) {
-                                    dispatch(HubAction.Failed(active.emulator.serial, userMessage(error)))
+                                    dispatch(HubAction.Failed(active.emulator.instanceId, userMessage(error)))
                                 }
                             }
                         }
-                        is HubAction.Failed -> if (action.serial == session?.emulator?.serial) {
+                        is HubAction.Failed -> if (action.instanceId == session?.emulator?.instanceId) {
                             withContext(NonCancellable) { disconnect() }
                             mutableState.update { it.copy(connecting = false, connected = false, message = action.message) }
                         }
@@ -356,6 +430,8 @@ class HubController(private val emulators: EmulatorInventory, private val before
             }
         } finally {
             withContext(NonCancellable) {
+                powerOperations.values.forEach { it.job.cancel() }
+                powerOperations.values.forEach { it.job.join() }
                 polling.cancelAndJoin()
                 refreshing?.cancelAndJoin()
                 disconnect()
@@ -381,3 +457,5 @@ private fun ScreenFrame.render(): RenderedFrame {
 }
 
 internal fun AvailableEmulator.canDelete(): Boolean = running == null && status in setOf(DeviceStatus.OFF, DeviceStatus.ERROR) && !id.startsWith("running:")
+
+private data class PowerOperation(val token: Long, val restart: Boolean, val job: Job)
