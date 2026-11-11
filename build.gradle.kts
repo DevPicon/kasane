@@ -18,7 +18,7 @@ dependencies {
     implementation("io.grpc:grpc-netty-shaded:1.69.1")
     implementation("io.grpc:grpc-protobuf:1.69.1")
     implementation("io.grpc:grpc-stub:1.69.1")
-    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.5.0")
     implementation("com.google.protobuf:protobuf-java:3.25.5")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation(kotlin("test-junit5"))
