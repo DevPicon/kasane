@@ -30,8 +30,14 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import org.jetbrains.skia.Image
 import java.awt.Desktop
+import dev.picon.androidhub.infrastructure.configureDockIcon
 
-fun main() = application {
+fun main() {
+    configureDockIcon()
+    launchHub()
+}
+
+private fun launchHub() = application {
     val appIcon = remember {
         val bytes = checkNotNull(ProductInfo::class.java.getResourceAsStream("/hub-icon.png")).use { it.readBytes() }
         BitmapPainter(Image.makeFromEncoded(bytes).toComposeImageBitmap())
