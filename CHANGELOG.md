@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Update Compose Desktop and its UI test library together to 1.12.2; preserve physical Home key navigation using the corrected key mapping.
+- Align gRPC Java runtime and code generation at 1.85.1, and Kotlin runtime/code generation at 1.5.0.
+- Group future Dependabot updates by Compose, gRPC and Protobuf families.
+
 ## 0.1.0-alpha.1 — 2026-11-11
 
 - Shut down or restart one AVD without interrupting another selected session. Reject duplicate and stale instance operations; cancel pending restarts on application close.

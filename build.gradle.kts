@@ -3,7 +3,7 @@ import com.google.protobuf.gradle.*
 plugins {
     kotlin("jvm") version "2.3.21"
     id("org.jetbrains.kotlin.plugin.compose") version "2.3.21"
-    id("org.jetbrains.compose") version "1.10.3"
+    id("org.jetbrains.compose") version "1.12.2"
     id("com.google.protobuf") version "0.9.4"
 }
 
@@ -15,14 +15,14 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.compose.material3:material3:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
-    implementation("io.grpc:grpc-netty-shaded:1.69.1")
-    implementation("io.grpc:grpc-protobuf:1.69.1")
-    implementation("io.grpc:grpc-stub:1.69.1")
-    implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+    implementation("io.grpc:grpc-netty-shaded:1.85.1")
+    implementation("io.grpc:grpc-protobuf:1.85.1")
+    implementation("io.grpc:grpc-stub:1.85.1")
+    implementation("io.grpc:grpc-kotlin-stub:1.5.0")
     implementation("com.google.protobuf:protobuf-java:3.25.5")
     compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.jetbrains.compose.ui:ui-test-junit4:1.10.3")
+    testImplementation("org.jetbrains.compose.ui:ui-test-junit4:1.12.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
@@ -32,8 +32,8 @@ dependencies {
 protobuf {
     protoc { artifact = "com.google.protobuf:protoc:3.25.5" }
     plugins {
-        create("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.69.1" }
-        create("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar" }
+        create("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.85.1" }
+        create("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.5.0:jdk8@jar" }
     }
     generateProtoTasks {
         all().forEach { task ->

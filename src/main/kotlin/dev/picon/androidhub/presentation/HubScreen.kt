@@ -249,7 +249,7 @@ private fun KeyEvent.navigationKey(): String? = when (key) {
     Key.DirectionDown -> "ArrowDown"
     Key.DirectionLeft -> "ArrowLeft"
     Key.DirectionRight -> "ArrowRight"
-    Key.Home -> "GoHome"
+    Key.MoveHome -> "GoHome"
     else -> null
 }
 

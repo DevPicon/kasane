@@ -10,3 +10,14 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
+    groups:
+      compose:
+        patterns:
+          - "org.jetbrains.compose"
+          - "org.jetbrains.compose.*:*"
+      grpc:
+        patterns:
+          - "io.grpc:*"
+      protobuf:
+        patterns:
+          - "com.google.protobuf:*"

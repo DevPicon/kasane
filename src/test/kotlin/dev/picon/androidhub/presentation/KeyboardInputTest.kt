@@ -29,4 +29,13 @@ class KeyboardInputTest {
         )
         assertNull(keyboardAction("emulator-5554", KeyEvent(Key.Escape, KeyEventType.KeyUp)))
     }
+    @Test
+    fun `physical home key sends Android home once`() {
+        assertEquals(
+            HubAction.Key("emulator-5554", "GoHome"),
+            keyboardAction("emulator-5554", KeyEvent(Key.MoveHome, KeyEventType.KeyDown)),
+        )
+        assertNull(keyboardAction("emulator-5554", KeyEvent(Key.MoveHome, KeyEventType.KeyUp)))
+        assertNull(keyboardAction("emulator-5554", KeyEvent(Key.SystemHome, KeyEventType.KeyDown)))
+    }
 }
