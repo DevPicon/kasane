@@ -68,6 +68,8 @@ fun HubScreen(
         onSurface = Color(0xFF202124),
     )) {
         AvdDeletionDialog(state.deleteTarget, state.deleting, state.deleteError, onAction)
+        DiagnosticDialog(state.diagnostic, !state.closing && state.diagnostic?.checking == false && state.diagnostic.deviceId == state.selectedDeviceId &&
+            selectedDevice?.status == DeviceStatus.READY && selectedDevice.running?.instanceId == state.diagnostic.instanceId, onAction)
         Row(Modifier.fillMaxSize().background(background).onPreviewKeyEvent { event ->
             if (event.key == Key.Tab && event.type == KeyEventType.KeyDown) {
                 inputMode.requestInputMode(InputMode.Keyboard)
@@ -77,7 +79,7 @@ fun HubScreen(
         }) {
             Column(Modifier.width(260.dp).fillMaxHeight().background(surface).padding(16.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Kasane", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                    Text(ProductInfo.shortName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                     TextButton(enabled = !state.closing && state.deleteTarget == null, onClick = onCreate, contentPadding = PaddingValues(4.dp)) { Text("+ Crear") }
                 }
                 Spacer(Modifier.height(32.dp))
@@ -86,12 +88,16 @@ fun HubScreen(
                 LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(state.devices, key = { it.id }) { emulator ->
                         DeviceInventoryRow(emulator, state.selectedDeviceId == emulator.id, !state.closing && !state.deleting,
-                            onSelect = { onAction(HubAction.SelectDevice(emulator.id)) },
-                            onDelete = { onAction(HubAction.RequestDelete(emulator.id)) })
+                            actions = DeviceInventoryActions(
+                                onSelect = { onAction(HubAction.SelectDevice(emulator.id)) },
+                                onDelete = { onAction(HubAction.RequestDelete(emulator.id)) },
+                                onStop = { onAction(HubAction.Stop(emulator.id)) },
+                                onRestart = { onAction(HubAction.Restart(emulator.id)) },
+                                onDiagnose = { onAction(HubAction.Diagnose(emulator.id)) }))
                     }
                 }
                 TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { Text("Actualizar emuladores") }
-                Text("Preview · transporte propio", fontSize = 11.sp, color = secondary)
+                Text("Alpha · ${ProductInfo.version}", fontSize = 11.sp, color = secondary)
             }
             VerticalDivider(color = Color(0xFFCFD3D9))
             Column(Modifier.weight(1f).fillMaxHeight()) {
@@ -101,9 +107,12 @@ fun HubScreen(
                         Text(listOfNotNull(selectedDevice?.api?.takeIf { it.isNotBlank() }?.let { "API $it" }, state.selected?.serial, state.posture?.label()).joinToString(" · ").ifEmpty { "macOS" }, fontSize = 12.sp, color = secondary)
                     }
                     if (state.connected && !state.closing) Text("●  Listo", color = accent, fontSize = 13.sp)
-                    if (state.connecting || state.closing || selectedDevice?.status == DeviceStatus.STARTING) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+                    if (state.connecting || state.closing || selectedDevice?.status in setOf(DeviceStatus.STARTING, DeviceStatus.STOPPING, DeviceStatus.RESTARTING)) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 }
                 HorizontalDivider(color = Color(0xFFCFD3D9))
+                state.powerErrors[state.selectedDeviceId]?.let { message ->
+                    Text(message, Modifier.padding(horizontal = 24.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                }
                 Box(Modifier.weight(1f).fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     if (state.connected && !state.closing && state.closeError == null && state.selected != null) {
                         EmulatorDisplay(state, frames, onAction, reduceMotion)
@@ -113,10 +122,13 @@ fun HubScreen(
                             if (state.closeError != null) {
                                 Text(state.closeError, color = MaterialTheme.colorScheme.error)
                                 OutlinedButton(onClick = { onAction(HubAction.Close) }) { Text("Reintentar apagado") }
-                            } else if (!state.closing && selectedDevice?.status in listOf(DeviceStatus.OFF, DeviceStatus.ERROR)) {
+                            } else if (!state.closing && selectedDevice?.running == null && selectedDevice?.status in listOf(DeviceStatus.OFF, DeviceStatus.ERROR)) {
                                 Button(onClick = { selectedDevice?.let { onAction(HubAction.Start(it.id)) } }) { Text("Iniciar emulador") }
                             } else if (!state.connecting && !state.closing && state.selected != null) {
                                 OutlinedButton(onClick = { onAction(HubAction.Select(state.selected)) }) { Text("Volver a conectar") }
+                            }
+                            if (!state.closing && !state.connecting && selectedDevice != null) {
+                                TextButton(onClick = { onAction(HubAction.Diagnose(selectedDevice.id)) }) { Text("Diagnóstico…") }
                             }
                         }
                     }
@@ -254,6 +266,8 @@ internal fun keyboardAction(serial: String, event: KeyEvent, surface: DisplaySur
 internal fun DeviceStatus.label(): String = when (this) {
     DeviceStatus.OFF -> "Apagado"
     DeviceStatus.STARTING -> "Iniciando"
+    DeviceStatus.STOPPING -> "Apagando"
+    DeviceStatus.RESTARTING -> "Reiniciando"
     DeviceStatus.READY -> "Listo"
     DeviceStatus.ERROR -> "Error"
 }

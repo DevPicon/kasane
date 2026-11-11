@@ -1,0 +1,48 @@
+# Build Android Emulator Hub from source
+
+Building locally is useful for inspecting the implementation, trying a change, debugging or producing your own package. It is optional for users of the release ZIPs and does not grant a license to redistribute the project; licensing is still pending.
+
+## Prerequisites
+
+- macOS. CI builds Apple Silicon and Intel separately; cross-compilation is not used.
+- JDK 17, available to Gradle (`java -version` / `JAVA_HOME`).
+- Python 3.10+ for version validation and package metadata finalization.
+- Git and access to this private repository.
+
+You do not need a real Android SDK to run the automated tests: they use temporary fixtures. Running the Hub against real emulators requires the SDK tools/images described in the README. The app's Java runtime is bundled during packaging; the SDK's own CLI still needs a working JDK.
+
+## Clone, check and package
+
+```sh
+git clone https://github.com/DevPicon/kasane.git
+cd kasane
+python3 scripts/test-version.py
+python3 scripts/check-version.py
+./gradlew test createDistributable --console=plain
+```
+
+The Gradle wrapper pins Gradle and verifies its distribution checksum. Kotlin/JVM and dependency versions are pinned in the build script.
+
+Output: `build/compose/binaries/main/app/Android Emulator Hub.app`. Tests: `build/reports/tests/test/index.html` and `build/test-results/test/`. Launch the packaged executable from your terminal to inherit your SDK environment:
+
+```sh
+'./build/compose/binaries/main/app/Android Emulator Hub.app/Contents/MacOS/Android Emulator Hub'
+```
+
+`./gradlew run` is the quicker development loop. Close the running application before rebuilding its package. Closing the Hub shuts down the emulators it lists, including externally started instances.
+
+## Icon source
+
+The original icon is in `assets/icons/hub.svg`; the checked-in `.icns` and PNG are generated assets used by normal builds. Regeneration requires macOS `iconutil` and `rsvg-convert` from librsvg:
+
+```sh
+./scripts/build-icon.sh
+```
+
+Normal builds do not require that renderer. Keep the vector and generated assets together when changing the icon.
+
+## Versions and signatures
+
+`appVersion` is public SemVer; `macBundleVersion` is a separate positive, increasing build counter. JDK 17's macOS packager requires a positive internal app-version. The build finalizes the bundle with the product's numeric short version and full prerelease metadata, then refreshes and verifies its ad-hoc signature. This is not Developer ID signing and does not produce notarization.
+
+The finalizer refuses to alter a bundle already signed with an identity. Any later Developer ID signing must happen after metadata finalization. See [release policy](releases.md) and [signing setup](macos-signing.md).

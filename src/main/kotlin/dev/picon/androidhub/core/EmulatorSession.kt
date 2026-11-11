@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class RunningEmulator(val serial: String, val name: String, val instanceId: String = serial, val avdId: String? = null)
 
-enum class DeviceStatus { OFF, STARTING, READY, ERROR }
+enum class DeviceStatus { OFF, STARTING, READY, STOPPING, RESTARTING, ERROR }
 
 enum class FormFactor { HANDSET, FOLDABLE, TABLET, WEARABLE, TV, AUTOMOTIVE, UNKNOWN }
 

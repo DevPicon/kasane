@@ -17,16 +17,31 @@ import androidx.compose.ui.unit.sp
 import dev.picon.androidhub.core.AvailableEmulator
 import dev.picon.androidhub.core.DeviceStatus
 
+internal data class DeviceInventoryActions(
+    val onSelect: () -> Unit,
+    val onDelete: () -> Unit,
+    val onStop: () -> Unit = {},
+    val onRestart: () -> Unit = {},
+    val onDiagnose: () -> Unit = {},
+)
+
 @Composable
 internal fun DeviceInventoryRow(device: AvailableEmulator, selected: Boolean, enabled: Boolean,
-    onSelect: () -> Unit, onDelete: () -> Unit, modifier: Modifier = Modifier) {
+    actions: DeviceInventoryActions, modifier: Modifier = Modifier) {
     var options by remember { mutableStateOf(false) }
     ContextMenuArea(items = {
-        if (enabled && device.canDelete()) listOf(ContextMenuItem("Eliminar…", onDelete)) else emptyList()
+        if (!enabled || device.powerPending()) emptyList() else buildList {
+            if (device.running != null) {
+                add(ContextMenuItem("Apagar", actions.onStop))
+                add(ContextMenuItem("Reiniciar", actions.onRestart))
+            }
+            add(ContextMenuItem("Diagnóstico…", actions.onDiagnose))
+            if (device.canDelete()) add(ContextMenuItem("Eliminar…", actions.onDelete))
+        }
     }) {
         Row(modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp))
             .background(if (selected) Color(0xFFD2DEC2) else Color.Transparent)
-            .clickable(enabled = enabled, onClick = onSelect).padding(start = 12.dp, top = 12.dp, bottom = 12.dp),
+            .clickable(enabled = enabled, onClick = actions.onSelect).padding(start = 12.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically) {
             FormFactorIcon(device.formFactor, Modifier.size(24.dp, 32.dp), color = if (selected) Color(0xFF355D27) else Color(0xFF5C626B))
             Spacer(Modifier.width(12.dp))
@@ -39,8 +54,13 @@ internal fun DeviceInventoryRow(device: AvailableEmulator, selected: Boolean, en
                 TextButton(enabled = enabled, onClick = { options = true }, contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.width(32.dp).semantics { contentDescription = "Opciones de ${device.name}" }) { Text("⋯") }
                 DropdownMenu(options && enabled, onDismissRequest = { options = false }) {
-                    DropdownMenuItem(text = { Text(if (device.canDelete()) "Eliminar…" else "Apaga el emulador para eliminarlo") },
-                        enabled = device.canDelete(), onClick = { options = false; onDelete() })
+                    if (device.running != null && !device.powerPending()) {
+                        DropdownMenuItem(text = { Text("Apagar") }, onClick = { options = false; actions.onStop() })
+                        DropdownMenuItem(text = { Text("Reiniciar") }, onClick = { options = false; actions.onRestart() })
+                    }
+                    DropdownMenuItem(text = { Text("Diagnóstico…") }, enabled = !device.powerPending(), onClick = { options = false; actions.onDiagnose() })
+                    DropdownMenuItem(text = { Text(if (device.canDelete()) "Eliminar…" else if (device.powerPending()) "Operación en curso…" else "Apaga el emulador para eliminarlo") },
+                        enabled = device.canDelete(), onClick = { options = false; actions.onDelete() })
                 }
             }
         }
@@ -63,3 +83,5 @@ internal fun AvdDeletionDialog(target: AvailableEmulator?, deleting: Boolean, er
         confirmButton = { TextButton(enabled = !deleting, onClick = { onAction(HubAction.ConfirmDelete) },
             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("Eliminar emulador") } })
 }
+
+private fun AvailableEmulator.powerPending() = status in setOf(DeviceStatus.STOPPING, DeviceStatus.RESTARTING)
