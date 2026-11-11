@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-alpha.2 — 2026-11-11
 
+- Add Acerca de via the native macOS application menu and Help menu, with version and authorship.
+- Package a read-only test DMG with the self-contained app, Applications shortcut and private evaluation instructions.
 - Set the macOS Dock icon explicitly at startup, including direct launcher and development runs.
 
 - Update Compose Desktop and its UI test library together to 1.12.2; preserve physical Home key navigation using the corrected key mapping.

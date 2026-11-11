@@ -3,6 +3,8 @@ package dev.picon.androidhub
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.DisposableEffect
@@ -30,6 +32,9 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import org.jetbrains.skia.Image
 import java.awt.Desktop
+import java.awt.EventQueue
+import androidx.compose.ui.window.MenuBar
+import dev.picon.androidhub.presentation.AboutDialog
 import dev.picon.androidhub.infrastructure.configureDockIcon
 
 fun main() {
@@ -42,6 +47,7 @@ private fun launchHub() = application {
         val bytes = checkNotNull(ProductInfo::class.java.getResourceAsStream("/hub-icon.png")).use { it.readBytes() }
         BitmapPainter(Image.makeFromEncoded(bytes).toComposeImageBitmap())
     }
+    var showAbout by remember { mutableStateOf(false) }
     val images = remember { SystemImagesController(MacSystemImageRepository()) }
     val creation = remember { AvdCreationController(MacAvdCreator()) }
     val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics()) { images.cancelAndAwait(); creation.cancelAndAwait() } }
@@ -53,7 +59,12 @@ private fun launchHub() = application {
             response.cancelQuit()
             controller.dispatch(HubAction.Close)
         }
-        onDispose { if (supported) desktop.setQuitHandler(null) }
+        val aboutSupported = desktop.isSupported(Desktop.Action.APP_ABOUT)
+        if (aboutSupported) desktop.setAboutHandler { EventQueue.invokeLater { showAbout = true } }
+        onDispose {
+            if (supported) desktop.setQuitHandler(null)
+            if (aboutSupported) desktop.setAboutHandler(null)
+        }
     }
     Window(
         onCloseRequest = { controller.dispatch(HubAction.Close) },
@@ -61,6 +72,10 @@ private fun launchHub() = application {
         icon = appIcon,
         state = rememberWindowState(width = 1200.dp, height = 800.dp),
     ) {
+        MenuBar {
+            Menu("Ayuda") { Item("Acerca de…", onClick = { showAbout = true }) }
+        }
+        if (showAbout) AboutDialog(appIcon, onDismiss = { showAbout = false })
         LaunchedEffect(controller) { controller.run() }
         LaunchedEffect(creation) { creation.run { controller.dispatch(HubAction.Created(it)) } }
         LaunchedEffect(images) { images.run { creation.dispatch(AvdCreationAction.RefreshImages(it)) } }

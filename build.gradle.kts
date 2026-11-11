@@ -99,3 +99,11 @@ tasks.matching { it.name == "createDistributable" }.configureEach {
         logger.lifecycle(result.standardOutput.asText.get().trim())
     }
 }
+
+// DMG wraps the finalized .app; it never asks jpackage to reinterpret public SemVer.
+tasks.register<Exec>("packageTestDmg") {
+    group = "distribution"
+    description = "Create and verify a private test DMG for the host architecture."
+    dependsOn("createDistributable")
+    commandLine("python3", project.file("scripts/package-test-dmg.py").absolutePath)
+}
