@@ -30,6 +30,16 @@ def final_signature_command(bundle, expected_bundle, signature_info, signing_ide
     return ["codesign", "--force", "--sign", "-", str(bundle)]
 
 
+def verify_original_signature(display_status, signature_info, signing_identity=None):
+    if display_status == 0:
+        return True
+    # Compose deliberately leaves Intel development images unsigned. Only that
+    # explicit state may receive an initial ad-hoc signature; other errors stop.
+    if not signing_identity and "code object is not signed at all" in signature_info:
+        return False
+    raise ValueError("Cannot inspect the original signature; refusing to modify this bundle.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("bundle", type=pathlib.Path)
@@ -40,12 +50,14 @@ def main():
                       if "=" in line and not line.lstrip().startswith("#"))
     expected = root / "build/compose/binaries/main/app" / f"{properties['appDisplayName']}.app"
     signature = subprocess.run(["codesign", "-dv", "--verbose=4", str(args.bundle)],
-                               capture_output=True, text=True, check=True)
+                               capture_output=True, text=True)
     try:
+        verify_original = verify_original_signature(signature.returncode, signature.stderr, args.signing_identity)
         command = final_signature_command(args.bundle, expected, signature.stderr, args.signing_identity)
     except ValueError as error:
         raise SystemExit(str(error)) from error
-    subprocess.run(["codesign", "--verify", "--deep", "--strict", str(args.bundle)], check=True, capture_output=True)
+    if verify_original:
+        subprocess.run(["codesign", "--verify", "--deep", "--strict", str(args.bundle)], check=True, capture_output=True)
     info = args.bundle / "Contents/Info.plist"
     values = plistlib.loads(info.read_bytes())
     semantic = properties["appVersion"]

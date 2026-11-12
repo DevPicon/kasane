@@ -103,8 +103,10 @@ tasks.matching { it.name == "createDistributable" }.configureEach {
             signingIdentity.orNull?.takeIf { it.isNotBlank() }?.let { arguments += listOf("--signing-identity", it) }
             commandLine(arguments)
         }
-        result.result.get().assertNormalExitValue()
+        val execution = result.result.get()
         logger.lifecycle(result.standardOutput.asText.get().trim())
+        if (execution.exitValue != 0) logger.error(result.standardError.asText.get().trim())
+        execution.assertNormalExitValue()
     }
 }
 

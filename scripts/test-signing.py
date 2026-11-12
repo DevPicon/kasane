@@ -23,6 +23,15 @@ class SigningBoundaryTest(unittest.TestCase):
     def test_unsigned_build_remains_adhoc(self):
         self.assertEqual(finalizer.final_signature_command(BUNDLE, BUNDLE, "Signature=adhoc")[-2:], ["-", str(BUNDLE)])
 
+    def test_intel_unsigned_development_image_can_receive_its_initial_signature(self):
+        self.assertFalse(finalizer.verify_original_signature(1, "App.app: code object is not signed at all"))
+        self.assertEqual(finalizer.final_signature_command(BUNDLE, BUNDLE, "code object is not signed at all")[-2:], ["-", str(BUNDLE)])
+
+    def test_inspection_errors_and_missing_identity_signatures_fail_closed(self):
+        for message, identity in [("No such file or directory", None), ("invalid signature", None), ("code object is not signed at all", NAME)]:
+            with self.subTest(message=message, identity=identity), self.assertRaises(ValueError):
+                finalizer.verify_original_signature(1, message, identity)
+
     def test_identity_is_never_silently_downgraded(self):
         with self.assertRaises(ValueError):
             finalizer.final_signature_command(BUNDLE, BUNDLE, SIGNED)
