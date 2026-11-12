@@ -18,13 +18,19 @@ Created by **Armando Picón — [@devpicon](https://github.com/DevPicon)**. Find
 
 ## Capture emulator screens
 
-Use **Captura PNG** to save a device-resolution image, or **Grabar video** to record an MP4 locally. Choose a new filename in the native save dialog before starting. **Mostrar taps** controls Android's touch indicators during the video and restores the previous setting afterward. The Hub does not record the Mac desktop or upload captures.
+Use the camera and video icons in the top toolbar. Hover over an icon to see its action name, or focus it with the keyboard. A screenshot prompts for a destination. Recording starts immediately in a private temporary file; the red stop square finishes the MP4 and then opens the save dialog. Canceling that dialog keeps the video pending, with Save and Discard actions. Discard asks for confirmation. An existing destination file is preserved, and a failed export keeps the temporary recording available to retry.
 
-One video can run at a time, pinned to its original emulator even when you select another device. Use **Detener y guardar**, or let it finish after three minutes. Stopping/restarting that AVD or closing the Hub waits for recording finalization. Videos have no audio. Rotation and fold posture controls are disabled for the recorded device because Android screenrecord does not support geometry changes reliably. Devices/displays without screenrecord support report an error; screen content protected by Android may appear blank. Existing destination files are preserved.
+**Show taps** controls Android's touch indicators during the video and restores the previous setting before the save dialog. One video can run at a time, pinned to its original emulator even when you select another device. The three-minute limit, individual shutdown/restart and Hub close all finalize recording. Closing remains blocked until a pending video is saved or explicitly discarded. Videos have no audio; rotation and fold posture controls are disabled for the recorded device. Displays without screenrecord support report an error; Android-protected content may appear blank. Captures stay local and do not include the Mac desktop.
+
+Known preview limitation: on the tested Android image, a completely static recording can contain a single frame with zero reported duration. Record interactions when evaluating video capture; preserving elapsed time for idle recordings remains pending.
+
+## Language
+
+English is the initial language, regardless of macOS settings. Choose **English**, **Español** or **Português** in the top-right language selector; the preference is saved locally and changes the interface immediately. AVD names, SDK labels, paths, versions and raw tool output are preserved. Native macOS dialog buttons follow the system language.
 
 ## Screenshots
 
-Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The interface is currently in Spanish. These are application captures, not mockups; the emulator launcher contains no signed-in account.
+Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. These older screenshots show the Spanish interface. These are application captures, not mockups; the emulator launcher contains no signed-in account.
 
 ![Android Emulator Hub showing a live Pixel Fold and contextual posture controls](docs/screenshots/hub-foldable.png)
 

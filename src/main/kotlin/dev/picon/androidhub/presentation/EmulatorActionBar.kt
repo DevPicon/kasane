@@ -68,17 +68,20 @@ private fun ControlButton(
     modifier: Modifier = Modifier,
     selected: Boolean = false,
 ) {
+    val strings = LocalUiStrings.current
+    val localizedLabel = if (command is EmulatorCommand.SetPosture)
+        strings.text("Postura ${strings.text(command.posture.label())}") else strings.text(label)
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     TooltipArea(tooltip = {
         Surface(shape = RoundedCornerShape(6.dp), shadowElevation = 3.dp) {
-            Text(label, Modifier.padding(8.dp), fontSize = 12.sp)
+            Text(localizedLabel, Modifier.padding(8.dp), fontSize = 12.sp)
         }
     }, modifier = modifier) {
         val buttonModifier = Modifier
             .size(40.dp)
             .semantics {
-                contentDescription = label
+                contentDescription = localizedLabel
                 if (command is EmulatorCommand.SetPosture) this.selected = selected
             }
             .border(if (focused) 2.dp else 0.dp, if (focused) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))

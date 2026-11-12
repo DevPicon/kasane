@@ -39,6 +39,14 @@ import dev.picon.androidhub.infrastructure.configureDockIcon
 import dev.picon.androidhub.infrastructure.MacEmulatorCapture
 import dev.picon.androidhub.infrastructure.MacCaptureDestination
 import dev.picon.androidhub.presentation.CaptureController
+import dev.picon.androidhub.presentation.UiStrings
+import dev.picon.androidhub.presentation.LocalUiStrings
+import dev.picon.androidhub.core.AppLanguage
+import dev.picon.androidhub.core.CaptureKind
+import dev.picon.androidhub.infrastructure.MacCaptureFiles
+import dev.picon.androidhub.infrastructure.MacLanguagePreferences
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberUpdatedState
 
 fun main() {
     configureDockIcon()
@@ -51,9 +59,21 @@ private fun launchHub() = application {
         BitmapPainter(Image.makeFromEncoded(bytes).toComposeImageBitmap())
     }
     var showAbout by remember { mutableStateOf(false) }
+    val preferences = remember { MacLanguagePreferences() }
+    var selectedLanguage by remember { mutableStateOf<AppLanguage?>(null) }
+    val storedLanguage by produceState(AppLanguage.ENGLISH) { value = preferences.read() }
+    val language = selectedLanguage ?: storedLanguage
+    var languageSaveFailed by remember { mutableStateOf(false) }
+    LaunchedEffect(selectedLanguage) {
+        selectedLanguage?.let { languageSaveFailed = !preferences.write(it) }
+    }
+    val strings = remember(language) { UiStrings(language) }
+    val latestStrings = rememberUpdatedState(strings)
     val images = remember { SystemImagesController(MacSystemImageRepository()) }
     val creation = remember { AvdCreationController(MacAvdCreator()) }
-    val capture = remember { CaptureController(MacEmulatorCapture(), MacCaptureDestination()) }
+    val capture = remember { CaptureController(MacEmulatorCapture(), MacCaptureDestination {
+        latestStrings.value.text(if (it == CaptureKind.VIDEO) "Guardar grabación MP4" else "Guardar captura PNG")
+    }, MacCaptureFiles()) }
     val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics(),
         beforePowerOff = { capture.finishAndAwait(it) },
         allowGeometryChange = { capture.state.value.recording?.instanceId != it.instanceId }) {
@@ -80,24 +100,27 @@ private fun launchHub() = application {
         icon = appIcon,
         state = rememberWindowState(width = 1200.dp, height = 800.dp),
     ) {
-        MenuBar {
-            Menu("Ayuda") { Item("Acerca de…", onClick = { showAbout = true }) }
+        CompositionLocalProvider(LocalUiStrings provides strings) {
+            MenuBar {
+                Menu(strings.text("Ayuda")) { Item(strings.text("Acerca de…"), onClick = { showAbout = true }) }
+            }
+            if (showAbout) AboutDialog(appIcon, onDismiss = { showAbout = false })
+            LaunchedEffect(capture) { capture.run() }
+            val captureState by capture.state.collectAsState()
+            LaunchedEffect(controller) { controller.run() }
+            LaunchedEffect(creation) { creation.run { controller.dispatch(HubAction.Created(it)) } }
+            LaunchedEffect(images) { images.run { creation.dispatch(AvdCreationAction.RefreshImages(it)) } }
+            val imageState by images.state.collectAsState()
+            val state by controller.state.collectAsState()
+            LaunchedEffect(state.closed) { if (state.closed) exitApplication() }
+            val creationState by creation.state.collectAsState()
+            HubScreen(state, controller.frame, controller::dispatch, reduceMotion, onCreate = { creation.dispatch(AvdCreationAction.Open) },
+                captureState = captureState, onCapture = capture::dispatch, language = language,
+                onLanguage = { selectedLanguage = it }, languageSaveFailed = languageSaveFailed)
+            AvdCreationDialog(creationState, creation::dispatch, onManageImages = {
+                images.dispatch(SystemImagesAction.Open(creationState.catalog?.profiles?.firstOrNull { it.id == creationState.profileId }))
+            })
+            SystemImagesDialog(imageState, images::dispatch)
         }
-        if (showAbout) AboutDialog(appIcon, onDismiss = { showAbout = false })
-        LaunchedEffect(capture) { capture.run() }
-        val captureState by capture.state.collectAsState()
-        LaunchedEffect(controller) { controller.run() }
-        LaunchedEffect(creation) { creation.run { controller.dispatch(HubAction.Created(it)) } }
-        LaunchedEffect(images) { images.run { creation.dispatch(AvdCreationAction.RefreshImages(it)) } }
-        val imageState by images.state.collectAsState()
-        val state by controller.state.collectAsState()
-        LaunchedEffect(state.closed) { if (state.closed) exitApplication() }
-        val creationState by creation.state.collectAsState()
-        HubScreen(state, controller.frame, controller::dispatch, reduceMotion, onCreate = { creation.dispatch(AvdCreationAction.Open) },
-            captureState = captureState, onCapture = capture::dispatch)
-        AvdCreationDialog(creationState, creation::dispatch, onManageImages = {
-            images.dispatch(SystemImagesAction.Open(creationState.catalog?.profiles?.firstOrNull { it.id == creationState.profileId }))
-        })
-        SystemImagesDialog(imageState, images::dispatch)
     }
 }

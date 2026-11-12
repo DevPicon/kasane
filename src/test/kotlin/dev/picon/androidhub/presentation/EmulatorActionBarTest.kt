@@ -22,7 +22,7 @@ class EmulatorActionBarTest {
         val capabilities = mutableStateOf(EmulatorCapabilities(true, true, setOf(FoldPosture.FOLDED, FoldPosture.OPEN)))
         val enabled = mutableStateOf(true)
         val commands = mutableListOf<EmulatorCommand>()
-        compose.setContent {
+        compose.setSpanishContent {
             MaterialTheme { EmulatorActionBar(capabilities.value, FoldPosture.OPEN, enabled.value, commands::add) }
         }
         compose.onNodeWithContentDescription("Postura Abierto").assertIsSelected()
@@ -40,7 +40,7 @@ class EmulatorActionBarTest {
     @Test
     fun keyboardMovesFocusAndActivatesTheNextControl() {
         val commands = mutableListOf<EmulatorCommand>()
-        compose.setContent {
+        compose.setSpanishContent {
             MaterialTheme { EmulatorActionBar(EmulatorCapabilities(navigation = true), null, true, commands::add) }
         }
         compose.onNodeWithContentDescription("Inicio").performSemanticsAction(SemanticsActions.RequestFocus) { it() }

@@ -2,6 +2,7 @@ package dev.picon.androidhub.presentation
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import dev.picon.androidhub.core.PendingCaptureExport
 import dev.picon.androidhub.core.EmulatorSession
 import dev.picon.androidhub.core.RunningEmulator
 import dev.picon.androidhub.core.EmulatorInventory
@@ -287,7 +288,13 @@ class HubController(private val emulators: EmulatorInventory, private val diagno
                         }
                         HubAction.Close -> {
                             cancelDiagnostic()
-                            beforeClose()
+                            try { beforeClose() }
+                            catch (error: CancellationException) { throw error }
+                            catch (error: PendingCaptureExport) {
+                                // A pending local export is a close preflight failure, not a transport failure.
+                                mutableState.update { it.copy(closing = false, message = error.message ?: it.message) }
+                                continue
+                            }
                             powerOperations.values.forEach { it.job.cancel() }
                             powerOperations.values.forEach { it.job.join() }
                             powerOperations.clear()

@@ -23,18 +23,31 @@ class CaptureToolbarTest {
                     geometryEnabled = state.value.recording == null)
             }
         } }
-        compose.onNodeWithText("Captura PNG").performClick()
-        compose.onNodeWithText("Grabar video").performClick()
+        compose.onNodeWithContentDescription("Take screenshot").performClick()
+        compose.onNodeWithContentDescription("Record video").performClick()
         assertEquals(listOf(CaptureAction.Screenshot(emulator), CaptureAction.Record(emulator)), actions)
         compose.runOnIdle { state.value = CaptureState(busy = true, recording = emulator) }
-        compose.onNodeWithText("Captura PNG").assertIsNotEnabled()
-        compose.onNodeWithText("Grabar video").assertDoesNotExist()
-        compose.onNodeWithContentDescription("Rotar 90°").assertIsNotEnabled()
-        compose.onNodeWithContentDescription("Postura Abierto").assertIsNotEnabled()
-        compose.onNodeWithContentDescription("Inicio").assertIsEnabled()
-        compose.onNodeWithText("Detener y guardar").performClick()
+        compose.onNodeWithContentDescription("Take screenshot").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Record video").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Rotate 90°").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Posture: Open").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Home").assertIsEnabled()
+        compose.onNodeWithContentDescription("Stop recording").performClick()
         assertEquals(CaptureAction.Stop, actions.last())
         compose.runOnIdle { state.value = state.value.copy(stopping = true) }
-        compose.onNodeWithText("Detener y guardar").assertIsNotEnabled()
+        compose.onNodeWithContentDescription("Stop recording").assertIsNotEnabled()
     }
+    @Test fun pendingRecordingCanBeSavedOrDiscardedOnlyAfterConfirmation() {
+        val actions = mutableListOf<CaptureAction>()
+        compose.setContent { MaterialTheme { CaptureToolbar(CaptureState(pendingVideo = "/owned/video.mp4"), null, false, actions::add) } }
+        compose.onNodeWithContentDescription("Save recording").performClick()
+        assertEquals(listOf<CaptureAction>(CaptureAction.Save), actions)
+        compose.onNodeWithContentDescription("Discard recording").performClick()
+        assertEquals(listOf<CaptureAction>(CaptureAction.Save), actions)
+        compose.onNodeWithText("Cancel").performClick()
+        compose.onNodeWithContentDescription("Discard recording").performClick()
+        compose.onNodeWithText("Discard").performClick()
+        assertEquals(listOf<CaptureAction>(CaptureAction.Save, CaptureAction.Discard), actions)
+    }
+
 }

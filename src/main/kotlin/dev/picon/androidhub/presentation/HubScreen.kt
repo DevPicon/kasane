@@ -56,6 +56,9 @@ fun HubScreen(
     onCreate: () -> Unit = {},
     captureState: CaptureState = CaptureState(),
     onCapture: (CaptureAction) -> Unit = {},
+    language: dev.picon.androidhub.core.AppLanguage = dev.picon.androidhub.core.AppLanguage.ENGLISH,
+    onLanguage: (dev.picon.androidhub.core.AppLanguage) -> Unit = {},
+    languageSaveFailed: Boolean = false,
 ) {
     val selectedDevice = state.devices.firstOrNull { it.id == state.selectedDeviceId }
     val focusManager = LocalFocusManager.current
@@ -82,10 +85,10 @@ fun HubScreen(
             Column(Modifier.width(260.dp).fillMaxHeight().background(surface).padding(16.dp)) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(ProductInfo.shortName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                    TextButton(enabled = !state.closing && state.deleteTarget == null, onClick = onCreate, contentPadding = PaddingValues(4.dp)) { Text("+ Crear") }
+                    TextButton(enabled = !state.closing && state.deleteTarget == null, onClick = onCreate, contentPadding = PaddingValues(4.dp)) { UiText("+ Crear") }
                 }
                 Spacer(Modifier.height(32.dp))
-                Text("EMULADORES", fontSize = 11.sp, color = secondary, fontWeight = FontWeight.SemiBold)
+                UiText("EMULADORES", fontSize = 11.sp, color = secondary, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(12.dp))
                 LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(state.devices, key = { it.id }) { emulator ->
@@ -98,45 +101,47 @@ fun HubScreen(
                                 onDiagnose = { onAction(HubAction.Diagnose(emulator.id)) }))
                     }
                 }
-                TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { Text("Actualizar emuladores") }
-                Text("Alpha · ${ProductInfo.version}", fontSize = 11.sp, color = secondary)
+                TextButton(enabled = !state.closing, onClick = { onAction(HubAction.Refresh) }) { UiText("Actualizar emuladores") }
+                UiText("Alpha · ${ProductInfo.version}", fontSize = 11.sp, color = secondary)
             }
             VerticalDivider(color = Color(0xFFCFD3D9))
             Column(Modifier.weight(1f).fillMaxHeight()) {
                 Row(Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(selectedDevice?.name ?: state.selected?.name ?: "Emuladores Android", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        Text(listOfNotNull(selectedDevice?.api?.takeIf { it.isNotBlank() }?.let { "API $it" }, state.selected?.serial, state.posture?.label()).joinToString(" · ").ifEmpty { "macOS" }, fontSize = 12.sp, color = secondary)
+                        Text(selectedDevice?.name ?: state.selected?.name ?: LocalUiStrings.current.text("Emuladores Android"), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Text(listOfNotNull(selectedDevice?.api?.takeIf { it.isNotBlank() }?.let { "API $it" }, state.selected?.serial, state.posture?.label()?.let(LocalUiStrings.current::text)).joinToString(" · ").ifEmpty { "macOS" }, fontSize = 12.sp, color = secondary)
                     }
-                    if (state.connected && !state.closing) Text("●  Listo", color = accent, fontSize = 13.sp)
+                    LanguageSelector(language, onLanguage)
+                    if (state.connected && !state.closing) UiText("●  Listo", color = accent, fontSize = 13.sp)
                     if (state.connecting || state.closing || selectedDevice?.status in setOf(DeviceStatus.STARTING, DeviceStatus.STOPPING, DeviceStatus.RESTARTING)) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 }
+                CaptureToolbar(captureState, state.selected, state.connected && !state.closing, onCapture)
+                if (languageSaveFailed) UiText("No se pudo guardar el idioma. Se aplicará solo en esta sesión.", fontSize = 12.sp)
                 HorizontalDivider(color = Color(0xFFCFD3D9))
                 state.powerErrors[state.selectedDeviceId]?.let { message ->
-                    Text(message, Modifier.padding(horizontal = 24.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                    UiText(message, Modifier.padding(horizontal = 24.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
                 }
                 Box(Modifier.weight(1f).fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     if (state.connected && !state.closing && state.closeError == null && state.selected != null) {
                         EmulatorDisplay(state, frames, onAction, reduceMotion, captureState.recording?.instanceId == state.selected.instanceId)
                     } else {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Text(state.message, color = secondary)
+                            UiText(state.message, color = secondary)
                             if (state.closeError != null) {
-                                Text(state.closeError, color = MaterialTheme.colorScheme.error)
-                                OutlinedButton(onClick = { onAction(HubAction.Close) }) { Text("Reintentar apagado") }
+                                UiText(state.closeError, color = MaterialTheme.colorScheme.error)
+                                OutlinedButton(onClick = { onAction(HubAction.Close) }) { UiText("Reintentar apagado") }
                             } else if (!state.closing && selectedDevice?.running == null && selectedDevice?.status in listOf(DeviceStatus.OFF, DeviceStatus.ERROR)) {
-                                Button(onClick = { selectedDevice?.let { onAction(HubAction.Start(it.id)) } }) { Text("Iniciar emulador") }
+                                Button(onClick = { selectedDevice?.let { onAction(HubAction.Start(it.id)) } }) { UiText("Iniciar emulador") }
                             } else if (!state.connecting && !state.closing && state.selected != null) {
-                                OutlinedButton(onClick = { onAction(HubAction.Select(state.selected)) }) { Text("Volver a conectar") }
+                                OutlinedButton(onClick = { onAction(HubAction.Select(state.selected)) }) { UiText("Volver a conectar") }
                             }
                             if (!state.closing && !state.connecting && selectedDevice != null) {
-                                TextButton(onClick = { onAction(HubAction.Diagnose(selectedDevice.id)) }) { Text("Diagnóstico…") }
+                                TextButton(onClick = { onAction(HubAction.Diagnose(selectedDevice.id)) }) { UiText("Diagnóstico…") }
                             }
                         }
                     }
                 }
-                CaptureToolbar(captureState, state.selected, state.connected && !state.closing, onCapture)
-                Text(
+                UiText(
                     if (state.closing) "Esperando la salida de los emuladores…" else "Al cerrar el hub se apagarán los emuladores de la lista.",
                     Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
                     fontSize = 12.sp,
@@ -239,7 +244,7 @@ private fun EmulatorDisplay(
         Spacer(Modifier.height(16.dp))
         EmulatorActionBar(state.capabilities, current.surface.posture, acceptingInput,
             onCommand = { command -> latestAction(HubAction.Control(emulator.instanceId, command, current.surface)) }, geometryEnabled = !recording)
-        state.controlError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp)) }
+        state.controlError?.let { UiText(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp)) }
     }
 }
 

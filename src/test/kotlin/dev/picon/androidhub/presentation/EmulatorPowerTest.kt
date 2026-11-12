@@ -120,6 +120,25 @@ class EmulatorPowerTest {
         assertTrue(closing.state.value.closed)
         closeJob.join()
     }
+    @Test fun `pending export blocks close without disconnecting the live session`() = runTest {
+        val source = PowerInventory()
+        var pending = true
+        val controller = HubController(source, beforeClose = { if (pending) throw PendingCaptureExport("Save pending video") })
+        val runner = launch { controller.run() }; runCurrent()
+        val session = source.sessions.single()
+        controller.dispatch(HubAction.Close); runCurrent()
+        assertFalse(controller.state.value.closing)
+        assertFalse(controller.state.value.closed)
+        assertFalse(session.closed)
+        assertEquals("Save pending video", controller.state.value.message)
+        assertTrue(source.stopCalls.isEmpty())
+        pending = false
+        controller.dispatch(HubAction.Close); runCurrent()
+        assertTrue(controller.state.value.closed)
+        assertTrue(session.closed)
+        runner.join()
+    }
+
 }
 
 private class PowerInventory : EmulatorInventory {

@@ -20,7 +20,7 @@ class AvdCreationContentTest {
     fun validationAndCreatingStateControlSubmission() {
         val state = mutableStateOf(AvdCreationState(visible = true, catalog = catalog, profileId = "phone", imageId = "img"))
         val actions = mutableListOf<AvdCreationAction>()
-        compose.setContent { AvdCreationContent(state.value, actions::add, Modifier.size(620.dp, 660.dp)) }
+        compose.setSpanishContent { AvdCreationContent(state.value, actions::add, Modifier.size(620.dp, 660.dp)) }
         compose.onAllNodesWithText("Crear emulador").assertCountEquals(2)
         compose.onAllNodesWithText("Crear emulador").filter(hasClickAction()).onFirst().assertIsNotEnabled()
         compose.onNodeWithText("Nombre del AVD").performTextInput("Typed_AVD")
@@ -39,7 +39,7 @@ class AvdCreationContentTest {
 
     @Test
     fun emptyInstalledImagesOffersExplicitDownload() {
-        compose.setContent { AvdCreationContent(AvdCreationState(visible = true, catalog = catalog.copy(images = emptyList(), profiles = emptyList())), {}, Modifier.size(620.dp, 660.dp)) }
+        compose.setSpanishContent { AvdCreationContent(AvdCreationState(visible = true, catalog = catalog.copy(images = emptyList(), profiles = emptyList())), {}, Modifier.size(620.dp, 660.dp)) }
         compose.onNodeWithText("No hay imágenes Android instaladas compatibles con este equipo. Usa Descargar imágenes para instalar una.").assertExists()
         compose.onNodeWithText("Nombre del AVD").assertDoesNotExist()
         compose.onNodeWithText("Descargar imágenes…").assertIsEnabled()

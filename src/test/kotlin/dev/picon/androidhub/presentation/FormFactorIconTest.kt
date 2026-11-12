@@ -29,7 +29,7 @@ class FormFactorIconTest {
 
     @Test
     fun galleryRendersEveryCategoryWithAccessibleNames() {
-        compose.setContent {
+        compose.setSpanishContent {
             MaterialTheme {
                 Row(Modifier.background(Color(0xFFF3F4F6)).padding(24.dp), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                     FormFactor.entries.forEach { type ->
@@ -60,7 +60,7 @@ class FormFactorIconTest {
             AvailableEmulator("c", "Gamma", "36", DeviceStatus.OFF, formFactor = FormFactor.TABLET),
         )
         val state = mutableStateOf(HubUiState(devices = initial))
-        compose.setContent { HubScreen(state.value, MutableStateFlow(null), {}) }
+        compose.setSpanishContent { HubScreen(state.value, MutableStateFlow(null), {}) }
         for (label in listOf("Teléfono", "Plegable", "Tablet")) compose.onNodeWithContentDescription(label, useUnmergedTree = true).assertExists()
         compose.runOnIdle { state.value = state.value.copy(devices = initial.map { it.copy(status = DeviceStatus.STARTING) }) }
         for (label in listOf("Teléfono", "Plegable", "Tablet")) compose.onNodeWithContentDescription(label, useUnmergedTree = true).assertExists()

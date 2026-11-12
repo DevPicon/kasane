@@ -11,9 +11,9 @@ import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-internal class MacCaptureDestination : CaptureDestination {
+internal class MacCaptureDestination(private val title: (CaptureKind) -> String = { if (it == CaptureKind.VIDEO) "Save recording" else "Save screenshot" }) : CaptureDestination {
     override suspend fun choose(kind: CaptureKind): String? = withContext(Dispatchers.Swing) {
-        val dialog = FileDialog(null as Frame?, if (kind == CaptureKind.VIDEO) "Guardar grabación MP4" else "Guardar captura PNG", FileDialog.SAVE)
+        val dialog = FileDialog(null as Frame?, title(kind), FileDialog.SAVE)
         try {
             dialog.file = "emulator-${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"))}.${kind.extension}"
             dialog.isVisible = true
