@@ -90,5 +90,31 @@ class NotarizationGateTest(unittest.TestCase):
             self.assertEqual(json.loads((working / "app-notary-log.json").read_text()), {"issues": []})
 
 
+guard_spec = importlib.util.spec_from_file_location("bundle_guard", pathlib.Path(__file__).with_name("check-bundle-not-running.py"))
+bundle_guard = importlib.util.module_from_spec(guard_spec)
+guard_spec.loader.exec_module(bundle_guard)
+
+
+class LiveBundleGuardTest(unittest.TestCase):
+    def test_first_build_needs_no_process_scan(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(bundle_guard.subprocess, "run") as scan:
+            bundle_guard.check_bundle(pathlib.Path(folder) / "App.app")
+            scan.assert_not_called()
+
+    def test_only_a_confirmed_unused_executable_can_be_replaced(self):
+        with tempfile.TemporaryDirectory() as folder:
+            bundle = pathlib.Path(folder) / "App.app"
+            executable = bundle / "Contents/MacOS/App"
+            executable.parent.mkdir(parents=True)
+            executable.touch()
+            for code, output, error, allowed in [(1, "", "", True), (0, "12345", "", False), (1, "", "inspection denied", False)]:
+                with self.subTest(code=code, output=output), patch.object(bundle_guard.subprocess, "run", return_value=subprocess.CompletedProcess([], code, output, error)):
+                    if allowed:
+                        bundle_guard.check_bundle(bundle)
+                    else:
+                        with self.assertRaises(SystemExit):
+                            bundle_guard.check_bundle(bundle)
+
+
 if __name__ == "__main__":
     unittest.main()

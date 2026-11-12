@@ -96,6 +96,15 @@ tasks.matching { it.name == "createDistributable" }.configureEach {
     inputs.file("scripts/finalize-macos-bundle.py")
     inputs.property("semanticVersion", productVersion)
     inputs.property("signingIdentity", signingIdentity.orElse(""))
+    doFirst {
+        val guard = providers.exec {
+            commandLine("python3", project.file("scripts/check-bundle-not-running.py").absolutePath,
+                layout.buildDirectory.dir("compose/binaries/main/app/$productName.app").get().asFile.absolutePath)
+        }
+        val execution = guard.result.get()
+        if (execution.exitValue != 0) logger.error(guard.standardError.asText.get().trim())
+        execution.assertNormalExitValue()
+    }
     doLast {
         val result = providers.exec {
             val arguments = mutableListOf("python3", project.file("scripts/finalize-macos-bundle.py").absolutePath,
