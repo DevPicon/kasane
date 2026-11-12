@@ -33,6 +33,7 @@ internal fun EmulatorActionBar(
     enabled: Boolean,
     onCommand: (EmulatorCommand) -> Unit,
     modifier: Modifier = Modifier,
+    geometryEnabled: Boolean = true,
 ) {
     Surface(modifier, shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface,
         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCFD3D9))) {
@@ -43,13 +44,13 @@ internal fun EmulatorActionBar(
                 ControlButton("Inicio", EmulatorCommand.Home, enabled, onCommand)
                 ControlButton("Recientes", EmulatorCommand.Recents, enabled, onCommand)
             }
-            if (capabilities.rotation) ControlButton("Rotar 90°", EmulatorCommand.Rotate, enabled, onCommand)
+            if (capabilities.rotation) ControlButton("Rotar 90°", EmulatorCommand.Rotate, enabled && geometryEnabled, onCommand)
             if (capabilities.postures.isNotEmpty()) VerticalDivider(
                 Modifier.height(24.dp).padding(horizontal = 4.dp), color = Color(0xFFCFD3D9),
             )
             capabilities.postures.forEach { available ->
                 ControlButton(
-                    "Postura ${available.label()}", EmulatorCommand.SetPosture(available), enabled, onCommand,
+                    "Postura ${available.label()}", EmulatorCommand.SetPosture(available), enabled && geometryEnabled, onCommand,
                     selected = posture == available,
                 )
             }

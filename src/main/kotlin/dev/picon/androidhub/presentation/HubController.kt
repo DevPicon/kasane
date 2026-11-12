@@ -99,7 +99,7 @@ sealed interface HubAction {
 }
 
 /** UI event boundary. run() is owned and cancelled by the window's LaunchedEffect. */
-class HubController(private val emulators: EmulatorInventory, private val diagnostics: TransportDiagnostics? = null, private val beforeClose: suspend () -> Unit = {}) {
+class HubController(private val emulators: EmulatorInventory, private val diagnostics: TransportDiagnostics? = null, private val beforePowerOff: suspend (RunningEmulator) -> Unit = {}, private val allowGeometryChange: (RunningEmulator) -> Boolean = { true }, private val beforeClose: suspend () -> Unit = {}) {
     private val mutableState = MutableStateFlow(HubUiState())
     val state = mutableState.asStateFlow()
     private val mutableFrame = MutableStateFlow<RenderedFrame?>(null)
@@ -223,6 +223,7 @@ class HubController(private val emulators: EmulatorInventory, private val diagno
                                 try {
                                     val fresh = emulators.list().firstOrNull { it.id == id }?.running
                                     if (fresh != null && fresh.instanceId != expected.instanceId) throw SessionFailure("La instancia cambió. Actualiza el inventario antes de actuar sobre ella.")
+                                    beforePowerOff(expected)
                                     emulators.stop(expected)
                                     currentCoroutineContext().ensureActive()
                                     val remaining = emulators.list().firstOrNull { it.id == id }?.running
@@ -475,6 +476,8 @@ class HubController(private val emulators: EmulatorInventory, private val diagno
                             val current = mutableState.value
                             if (active.emulator.instanceId != action.instanceId || !current.connected ||
                                 !current.capabilities.supports(action.command) || mutableFrame.value?.surface != action.surface) continue
+                            if ((action.command == EmulatorCommand.Rotate || action.command is EmulatorCommand.SetPosture) &&
+                                !allowGeometryChange(active.emulator)) continue
                             mutableState.update { it.copy(controlPending = true, controlError = null) }
                             try {
                                 active.releaseInput()

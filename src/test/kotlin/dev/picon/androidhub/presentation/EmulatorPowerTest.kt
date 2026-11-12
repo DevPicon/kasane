@@ -97,6 +97,29 @@ class EmulatorPowerTest {
         assertTrue(controller.state.value.powerErrors.containsKey("A"))
         job.cancelAndJoin()
     }
+    @Test fun `stop and close await recording finalization before powering off`() = runTest {
+        val source = PowerInventory()
+        val finalization = CompletableDeferred<Unit>()
+        var hookTarget: RunningEmulator? = null
+        val controller = HubController(source, beforePowerOff = { hookTarget = it; finalization.await() })
+        val job = launch { controller.run() }; runCurrent()
+        controller.dispatch(HubAction.Stop("B")); runCurrent()
+        assertEquals("B", hookTarget?.avdId)
+        assertTrue(source.stopCalls.isEmpty())
+        finalization.complete(Unit); runCurrent()
+        assertEquals(listOf("B:1"), source.stopCalls)
+        job.cancelAndJoin()
+
+        val shutdownSource = PowerInventory()
+        val closeGate = CompletableDeferred<Unit>()
+        val closing = HubController(shutdownSource, beforeClose = { closeGate.await() })
+        val closeJob = launch { closing.run() }; runCurrent()
+        closing.dispatch(HubAction.Close); runCurrent()
+        assertTrue(shutdownSource.stopCalls.isEmpty())
+        closeGate.complete(Unit); runCurrent()
+        assertTrue(closing.state.value.closed)
+        closeJob.join()
+    }
 }
 
 private class PowerInventory : EmulatorInventory {

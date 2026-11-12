@@ -54,6 +54,8 @@ fun HubScreen(
     onAction: (HubAction) -> Unit,
     reduceMotion: Boolean = false,
     onCreate: () -> Unit = {},
+    captureState: CaptureState = CaptureState(),
+    onCapture: (CaptureAction) -> Unit = {},
 ) {
     val selectedDevice = state.devices.firstOrNull { it.id == state.selectedDeviceId }
     val focusManager = LocalFocusManager.current
@@ -115,7 +117,7 @@ fun HubScreen(
                 }
                 Box(Modifier.weight(1f).fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
                     if (state.connected && !state.closing && state.closeError == null && state.selected != null) {
-                        EmulatorDisplay(state, frames, onAction, reduceMotion)
+                        EmulatorDisplay(state, frames, onAction, reduceMotion, captureState.recording?.instanceId == state.selected.instanceId)
                     } else {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Text(state.message, color = secondary)
@@ -133,6 +135,7 @@ fun HubScreen(
                         }
                     }
                 }
+                CaptureToolbar(captureState, state.selected, state.connected && !state.closing, onCapture)
                 Text(
                     if (state.closing) "Esperando la salida de los emuladores…" else "Al cerrar el hub se apagarán los emuladores de la lista.",
                     Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
@@ -151,6 +154,7 @@ private fun EmulatorDisplay(
     frames: StateFlow<RenderedFrame?>,
     onAction: (HubAction) -> Unit,
     reduceMotion: Boolean,
+    recording: Boolean,
 ) {
     val emulator = state.selected ?: return
     val serial = emulator.serial
@@ -234,7 +238,7 @@ private fun EmulatorDisplay(
         }
         Spacer(Modifier.height(16.dp))
         EmulatorActionBar(state.capabilities, current.surface.posture, acceptingInput,
-            onCommand = { command -> latestAction(HubAction.Control(emulator.instanceId, command, current.surface)) })
+            onCommand = { command -> latestAction(HubAction.Control(emulator.instanceId, command, current.surface)) }, geometryEnabled = !recording)
         state.controlError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp)) }
     }
 }

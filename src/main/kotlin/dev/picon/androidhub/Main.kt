@@ -36,6 +36,9 @@ import java.awt.EventQueue
 import androidx.compose.ui.window.MenuBar
 import dev.picon.androidhub.presentation.AboutDialog
 import dev.picon.androidhub.infrastructure.configureDockIcon
+import dev.picon.androidhub.infrastructure.MacEmulatorCapture
+import dev.picon.androidhub.infrastructure.MacCaptureDestination
+import dev.picon.androidhub.presentation.CaptureController
 
 fun main() {
     configureDockIcon()
@@ -50,7 +53,12 @@ private fun launchHub() = application {
     var showAbout by remember { mutableStateOf(false) }
     val images = remember { SystemImagesController(MacSystemImageRepository()) }
     val creation = remember { AvdCreationController(MacAvdCreator()) }
-    val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics()) { images.cancelAndAwait(); creation.cancelAndAwait() } }
+    val capture = remember { CaptureController(MacEmulatorCapture(), MacCaptureDestination()) }
+    val controller = remember { HubController(MacEmulatorInventory(MacEmulatorDiscovery()), MacTransportDiagnostics(),
+        beforePowerOff = { capture.finishAndAwait(it) },
+        allowGeometryChange = { capture.state.value.recording?.instanceId != it.instanceId }) {
+        capture.finishAndAwait(); images.cancelAndAwait(); creation.cancelAndAwait()
+    } }
     val reduceMotion by produceState(false) { value = readReduceMotion() }
     DisposableEffect(controller) {
         val desktop = Desktop.getDesktop()
@@ -76,6 +84,8 @@ private fun launchHub() = application {
             Menu("Ayuda") { Item("Acerca de…", onClick = { showAbout = true }) }
         }
         if (showAbout) AboutDialog(appIcon, onDismiss = { showAbout = false })
+        LaunchedEffect(capture) { capture.run() }
+        val captureState by capture.state.collectAsState()
         LaunchedEffect(controller) { controller.run() }
         LaunchedEffect(creation) { creation.run { controller.dispatch(HubAction.Created(it)) } }
         LaunchedEffect(images) { images.run { creation.dispatch(AvdCreationAction.RefreshImages(it)) } }
@@ -83,7 +93,8 @@ private fun launchHub() = application {
         val state by controller.state.collectAsState()
         LaunchedEffect(state.closed) { if (state.closed) exitApplication() }
         val creationState by creation.state.collectAsState()
-        HubScreen(state, controller.frame, controller::dispatch, reduceMotion, onCreate = { creation.dispatch(AvdCreationAction.Open) })
+        HubScreen(state, controller.frame, controller::dispatch, reduceMotion, onCreate = { creation.dispatch(AvdCreationAction.Open) },
+            captureState = captureState, onCapture = capture::dispatch)
         AvdCreationDialog(creationState, creation::dispatch, onManageImages = {
             images.dispatch(SystemImagesAction.Open(creationState.catalog?.profiles?.firstOrNull { it.id == creationState.profileId }))
         })

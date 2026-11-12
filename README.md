@@ -16,6 +16,12 @@ Android Emulator Hub brings your Android virtual devices into a shared workspace
 
 Created by **Armando Picón — [@devpicon](https://github.com/DevPicon)**. Find him as **@devpicon on all social networks**.
 
+## Capture emulator screens
+
+Use **Captura PNG** to save a device-resolution image, or **Grabar video** to record an MP4 locally. Choose a new filename in the native save dialog before starting. **Mostrar taps** controls Android's touch indicators during the video and restores the previous setting afterward. The Hub does not record the Mac desktop or upload captures.
+
+One video can run at a time, pinned to its original emulator even when you select another device. Use **Detener y guardar**, or let it finish after three minutes. Stopping/restarting that AVD or closing the Hub waits for recording finalization. Videos have no audio. Rotation and fold posture controls are disabled for the recorded device because Android screenrecord does not support geometry changes reliably. Devices/displays without screenrecord support report an error; screen content protected by Android may appear blank. Existing destination files are preserved.
+
 ## Screenshots
 
 Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The interface is currently in Spanish. These are application captures, not mockups; the emulator launcher contains no signed-in account.

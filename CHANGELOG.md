@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased · 0.1.0-alpha.3
+## Unreleased · 0.1.0-alpha.4
+
+- Save device-resolution PNG screenshots from the selected emulator through a native save dialog.
+- Record MP4 video with optional touch indicators, elapsed time, explicit stop and a three-minute limit.
+- Restore the previous Android touch-indicator setting; finalize recording before individual shutdown/restart or closing the Hub.
+- Keep recordings tied to their original instance and disable its rotation/posture controls while recording. Preserve existing files and clean up owned temporary files/processes.
+
+## 0.1.0-alpha.3 · Local notarized candidate
 
 - Add opt-in local Developer ID signing for the app, bundled runtime and native libraries, preserving hardened runtime and public version metadata.
 - Add a Keychain-profile notarization flow with separate app/DMG acceptance, ticket validation, Gatekeeper checks and final checksums.
