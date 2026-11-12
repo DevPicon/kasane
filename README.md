@@ -42,7 +42,7 @@ Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The i
 
 ## Install the current macOS alpha
 
-Current development version: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
+Latest published alpha: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
 
 1. Open [Releases](https://github.com/DevPicon/kasane/releases) and choose the newest alpha.
 2. Download the DMG for your Mac: `kasane-<version>-macos-arm64.dmg` for Apple Silicon or `kasane-<version>-macos-x64.dmg` for Intel. ZIP alternatives are also available. **About This Mac** identifies your chip.
@@ -55,6 +55,8 @@ Current development version: **0.1.0-alpha.2**. This is an early `0.x` preview w
 The full version and authorship appear under **Help → Acerca de…** or the native macOS About menu.
 
 Packages include their Java runtime. The preview is **not Developer ID signed or notarized**. macOS may block it; after verifying the source, use the explicit approval in **System Settings → Privacy & Security** as described by [Apple](https://support.apple.com/en-us/102445). Do not disable Gatekeeper globally.
+
+The optional local [Developer ID signing and notarization flow](docs/macos-signing.md) produces a distinct `*-notarized.dmg` only after Apple and Gatekeeper checks succeed. Standard CI artifacts remain ad-hoc builds.
 
 While the repository remains private, releases, Actions and artifacts require repository access; badges may not render for unauthenticated readers. Build and test badges report workflow results, not hand-written “passing” labels.
 

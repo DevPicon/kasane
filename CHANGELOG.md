@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased · 0.1.0-alpha.3
+
+- Add opt-in local Developer ID signing for the app, bundled runtime and native libraries, preserving hardened runtime and public version metadata.
+- Add a Keychain-profile notarization flow with separate app/DMG acceptance, ticket validation, Gatekeeper checks and final checksums.
+- Keep signing credentials out of ordinary CI; reject identity downgrades, unexpected teams and modification of delivered bundles.
+
 ## 0.1.0-alpha.2 — 2026-11-11
 
 - Add Acerca de via the native macOS application menu and Help menu, with version and authorship.

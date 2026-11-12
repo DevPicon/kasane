@@ -1,6 +1,6 @@
 # Developer ID signing, notarization and GitHub Secrets
 
-This is setup guidance. The current alpha is not Developer ID signed or notarized, and no signing secrets are configured or consumed by its CI workflows.
+The normal CI build remains ad-hoc signed and has no signing secrets. Local Developer ID signing is opt-in; local notarization uses an existing Keychain profile. Only an artifact that passes both notarization stages, stapling and Gatekeeper assessment is described as notarized.
 
 ## Apple account and credentials
 
@@ -9,6 +9,31 @@ Use the same active **Apple Developer Program** membership used for App Store di
 The signing identity includes its private key in the Mac's Keychain. A downloaded public `.cer` alone is insufficient. For a CI runner, the owner exports the certificate **and its private key** into a password-protected `.p12`. Do not send that export or its password through chat, issues, pull requests or Git.
 
 Notarization also needs authorized credentials: for example, a team App Store Connect API key with the corresponding key ID and issuer ID. Use the least role Apple permits for the chosen notarization flow. An Apple ID with an app-specific password is an alternative; do not use the normal account password in CI.
+
+## Local signing and notarization
+
+1. Install a valid Developer ID Application certificate with its private key in the login Keychain. Verify the identity with `security find-identity -v -p codesigning`.
+2. Create an app-specific password personally in the Apple Account portal. Store it interactively, never in shell arguments or chat:
+
+   ```sh
+   xcrun notarytool store-credentials "kasane-notary" --apple-id "YOUR_APPLE_ID" --team-id "YOUR_TEAM_ID"
+   ```
+
+   This prompts securely for the app-specific password and validates the profile before saving it.
+3. Select the public identity name (without the `Developer ID Application:` prefix) and build:
+
+   ```sh
+   export KASANE_SIGNING_IDENTITY="Your Name (YOURTEAMID)"
+   ./gradlew test createDistributable
+   python3 scripts/test-signing.py
+   python3 scripts/notarize-local-dmg.py --keychain-profile kasane-notary
+   ```
+
+Compose signs nested code, including native JAR contents and the Java runtime. The metadata finalizer then renews only the outer app signature, preserving its entitlements and requirements, with hardened runtime and a secure timestamp. This exception requires an explicit matching Developer ID identity, a valid original signature/team, and the exact local build output path. It refuses to downgrade an identity signature to ad hoc or edit a delivered app outside that build directory.
+
+The notarization script validates the signed bundle/version and Keychain profile, copies the app into a new working directory, submits the app archive, saves and reviews its notarization log, and requires `Accepted`. It staples and validates the app ticket before creating a Developer ID-signed DMG. It then notarizes the DMG, staples/validates its ticket and checks Gatekeeper and image integrity. The final `*-notarized.dmg` and SHA-256 appear under a uniquely named `build/notarization/` directory only after all gates pass. Failed or timed-out submissions retain their public IDs/logs for investigation; do not claim them as releases or repeatedly resubmit without checking their status.
+
+The intermediate `*-signed.dmg` is not a notarized distribution. Existing 0.1.0-alpha.1/.2 files and tags remain unchanged. Local credentials are not exported or uploaded to GitHub by this flow. CI signing is a separate future setup after the local walkthrough succeeds.
 
 ## Store secrets outside Git
 
@@ -28,7 +53,7 @@ Base64 is an encoding, not encryption. Protection comes from GitHub Secrets and 
 
 The owner can enter values in GitHub's UI, or use `gh secret set` with interactive input / stdin. Do not paste literal credentials into shell history. No long-lived personal GitHub token is needed to attach release assets: the current release job uses its scoped `GITHUB_TOKEN`.
 
-## Future signed release sequence
+## Future CI signed release sequence
 
 1. Build and finalize package metadata. Review the code and trusted version tag from main.
 2. In a separate trusted macOS release job, import the `.p12` into an ephemeral keychain. Keep normal PR/build/test jobs credential-free.

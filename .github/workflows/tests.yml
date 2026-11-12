@@ -27,6 +27,7 @@ jobs:
       - name: Validate version contract
         run: |
           python3 scripts/test-version.py
+          python3 scripts/test-signing.py
           python3 scripts/check-version.py
       - name: Test
         run: ./gradlew test --no-daemon --console=plain
