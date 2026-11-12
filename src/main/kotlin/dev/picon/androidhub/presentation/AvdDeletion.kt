@@ -47,8 +47,9 @@ internal fun DeviceInventoryRow(device: AvailableEmulator, selected: Boolean, en
             FormFactorIcon(device.formFactor, Modifier.size(24.dp, 32.dp), color = if (selected) Color(0xFF355D27) else Color(0xFF5C626B))
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(device.name, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                UiText(listOfNotNull(device.api.takeIf { it.isNotBlank() }?.let { "API $it" }, device.status.label()).joinToString(" · "),
+                DeviceHeading(device.name, device.status == DeviceStatus.READY,
+                    modifier = Modifier.fillMaxWidth(), fontSize = 14.sp, maxLines = 2)
+                UiText(listOfNotNull(device.api.takeIf { it.isNotBlank() }?.let { "API $it" }, device.status.takeUnless { it == DeviceStatus.READY }?.label()).joinToString(" · "),
                     fontSize = 12.sp, color = if (device.status == DeviceStatus.ERROR) MaterialTheme.colorScheme.error else Color(0xFF5C626B))
             }
             Box {

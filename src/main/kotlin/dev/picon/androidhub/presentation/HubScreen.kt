@@ -108,11 +108,11 @@ fun HubScreen(
             Column(Modifier.weight(1f).fillMaxHeight()) {
                 Row(Modifier.fillMaxWidth().height(64.dp).padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(selectedDevice?.name ?: state.selected?.name ?: LocalUiStrings.current.text("Emuladores Android"), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        DeviceHeading(selectedDevice?.name ?: state.selected?.name ?: LocalUiStrings.current.text("Emuladores Android"),
+                            ready = state.connected && !state.closing, modifier = Modifier.fillMaxWidth())
                         Text(listOfNotNull(selectedDevice?.api?.takeIf { it.isNotBlank() }?.let { "API $it" }, state.selected?.serial, state.posture?.label()?.let(LocalUiStrings.current::text)).joinToString(" · ").ifEmpty { "macOS" }, fontSize = 12.sp, color = secondary)
                     }
                     LanguageSelector(language, onLanguage)
-                    if (state.connected && !state.closing) UiText("●  Listo", color = accent, fontSize = 13.sp)
                     if (state.connecting || state.closing || selectedDevice?.status in setOf(DeviceStatus.STARTING, DeviceStatus.STOPPING, DeviceStatus.RESTARTING)) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
                 }
                 CaptureToolbar(captureState, state.selected, state.connected && !state.closing, onCapture)

@@ -2,6 +2,8 @@
 
 ## Unreleased · 0.1.0-alpha.5
 
+- Place a brighter green Ready badge beside device names in the header and sidebar, retaining localized text and full-name tooltips for truncated titles.
+
 - Move capture actions to the top toolbar, using vector camera/video/stop icons with localized tooltips, accessibility labels and keyboard focus.
 - Start recording in a private temporary file and ask for a destination after finalization. Keep canceled/failed exports pending for Save or confirmed Discard; block closure while a video remains pending.
 - Add English (default), Spanish and Portuguese with a persistent language selector; localize Hub messages, dialogs, menus and device controls while preserving user/SDK data.
