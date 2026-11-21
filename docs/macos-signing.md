@@ -53,15 +53,17 @@ Base64 is an encoding, not encryption. Protection comes from GitHub Secrets and 
 
 The owner can enter values in GitHub's UI, or use `gh secret set` with interactive input / stdin. Do not paste literal credentials into shell history. No long-lived personal GitHub token is needed to attach release assets: the current release job uses its scoped `GITHUB_TOKEN`.
 
-## Future CI signed release sequence
+## CI signed release sequence (`.github/workflows/release.yml`)
 
-1. Build and finalize package metadata. Review the code and trusted version tag from main.
-2. In a separate trusted macOS release job, import the `.p12` into an ephemeral keychain. Keep normal PR/build/test jobs credential-free.
-3. Sign the bundle, embedded runtime and native libraries with Developer ID, hardened runtime and the entitlements required by the JVM. Use the Compose signing support/default Java entitlements as a starting point, then test the actual signed build.
-4. Verify the signatures, create the archive, and submit it with `xcrun notarytool submit … --wait` using the selected credentials. Treat any result other than Accepted as a failure.
-5. Staple the ticket to the app using `xcrun stapler`, validate it, then create a fresh release ZIP and checksum. Verify the distributed archive and Gatekeeper behavior on another Mac.
-6. In an unconditional cleanup step, remove the ephemeral keychain and temporary certificate/key files. Attach only final distribution files; never upload signing material as an Actions artifact.
+Normal PR and `main` builds (`tests.yml` and `build.yml`) remain ad-hoc signed and credential-free. Trusted tag releases (`v*`) run `build-signed` inside the `macos-release` GitHub Environment:
 
-Do not run signing against untrusted pull-request code or expose these credentials through `pull_request_target`. Enabling this flow requires the owner's actual identity/keys and a verified signed/notarized walkthrough; the current unsigned preview workflow is not silently promoted into a signing workflow.
+1. Validate `appVersion` against the `v*` tag and run `tests.yml`.
+2. In `build-signed` (`macos-15` arm64 and `macos-15-intel` x64), decode `MACOS_CERTIFICATE_P12_BASE64` into an ephemeral keychain and `APPLE_NOTARY_KEY_P8_BASE64` into `$RUNNER_TEMP/AuthKey.p8`.
+3. Build and finalize metadata with `./gradlew createDistributable` and `KASANE_SIGNING_IDENTITY`.
+4. Run `scripts/notarize-local-dmg.py --api-key ... --key-id ... --issuer ... --output-dir dist --zip-app` to notarize and staple both the `.app` and the `.dmg`, verify Gatekeeper/checksums, and export the notarized `.dmg`, `.zip`, and `.sha256` files.
+5. In an unconditional `if: always()` cleanup step, delete the ephemeral keychain and temporary `.p12`/`.p8` files. Never upload signing material as an Actions artifact.
+6. Verify checksums in `release` and publish the assets with `gh release create`.
+
+Do not run signing against untrusted pull-request code or expose these credentials through `pull_request_target`.
 
 References: [Apple notarization workflow](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution), [Compose native distributions](https://kotlinlang.org/docs/multiplatform/compose-native-distribution.html).

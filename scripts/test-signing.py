@@ -89,6 +89,24 @@ class NotarizationGateTest(unittest.TestCase):
                 notarizer.submit(working / "app.zip", "test-profile", working, "app")
             self.assertEqual(json.loads((working / "app-notary-log.json").read_text()), {"issues": []})
 
+    def test_auth_args_accepts_keychain_or_api_key_only(self):
+        self.assertEqual(notarizer.build_auth_args(keychain_profile="kasane-notary"), ["--keychain-profile", "kasane-notary"])
+        with tempfile.TemporaryDirectory() as folder:
+            key = pathlib.Path(folder) / "AuthKey.p8"
+            key.write_text("placeholder")
+            self.assertEqual(
+                notarizer.build_auth_args(api_key=str(key), key_id="KEY123", issuer="ISSUER456"),
+                ["--key", str(key), "--key-id", "KEY123", "--issuer", "ISSUER456"],
+            )
+            with self.assertRaises(SystemExit):
+                notarizer.build_auth_args(keychain_profile="kasane-notary", api_key=str(key), key_id="KEY123", issuer="ISSUER456")
+            with self.assertRaises(SystemExit):
+                notarizer.build_auth_args(api_key=str(key), key_id="KEY123")
+            with self.assertRaises(SystemExit):
+                notarizer.build_auth_args(api_key=str(pathlib.Path(folder) / "missing.p8"), key_id="KEY123", issuer="ISSUER456")
+        with self.assertRaises(SystemExit):
+            notarizer.build_auth_args()
+
 
 guard_spec = importlib.util.spec_from_file_location("bundle_guard", pathlib.Path(__file__).with_name("check-bundle-not-running.py"))
 bundle_guard = importlib.util.module_from_spec(guard_spec)
