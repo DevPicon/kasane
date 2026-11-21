@@ -1,6 +1,6 @@
 # Contributing to Kasane
 
-Kasane is maintained by Armando Picón (@devpicon). It is currently private, with no project license. Coordinate proposed contributions with the author before submitting code. Access to this repository does not grant a general license to redistribute it.
+Kasane is maintained by Armando Picón (@devpicon) and is dual-licensed under **AGPL-3.0** (see [LICENSE](LICENSE)) and a **Commercial License** for proprietary or closed-source commercial use. Contributions are welcome! By submitting a pull request, you agree that your contribution is licensed under AGPL-3.0 and that the maintainer may also include your contribution under the commercial license.
 
 For a bug, include reproducible steps, Kasane version, macOS version/architecture, Emulator version, AVD profile and Android API. Never attach endpoint registration files or gRPC tokens. Remove private application data from screenshots and logs.
 

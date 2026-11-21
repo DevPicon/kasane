@@ -38,4 +38,4 @@ This metadata finalization happens **before** any future Developer ID signing. I
 
 Actions are pinned to upstream commit SHAs. Only the release publishing job has contents-write permission. Pull-request jobs have no signing credentials. See [signing setup](macos-signing.md) before configuring Developer ID/notarization; this preview remains unsigned by Developer ID and unnotarized.
 
-Main is intended to require an up-to-date PR, passing Unit and Compose tests / macOS arm64 / macOS x64 checks and resolved conversations, with force pushes and deletion blocked. A single maintainer may merge their own passing PR without mandatory peer approval. Keep the repository private until explicitly authorized to publish it; no project license has been selected.
+Main is intended to require an up-to-date PR, passing Unit and Compose tests / macOS arm64 / macOS x64 checks and resolved conversations, with force pushes and deletion blocked. A single maintainer may merge their own passing PR without mandatory peer approval. The project is dual-licensed under AGPL-3.0 and a Commercial License.

@@ -1,13 +1,13 @@
 # Build Android Emulator Hub from source
 
-Building locally is useful for inspecting the implementation, trying a change, debugging or producing your own package. It is optional for users of the release ZIPs and does not grant a license to redistribute the project; licensing is still pending.
+Building locally is useful for inspecting the implementation, trying a change, debugging or producing your own package. It is optional for users of the release packages and is governed by the project's [LICENSE](../LICENSE) (AGPL-3.0, with commercial licensing available from the author).
 
 ## Prerequisites
 
 - macOS. CI builds Apple Silicon and Intel separately; cross-compilation is not used.
 - JDK 17, available to Gradle (`java -version` / `JAVA_HOME`).
 - Python 3.10+ for version validation and package metadata finalization.
-- Git and access to this private repository.
+- Git.
 
 You do not need a real Android SDK to run the automated tests: they use temporary fixtures. Running the Hub against real emulators requires the SDK tools/images described in the README. The app's Java runtime is bundled during packaging; the SDK's own CLI still needs a working JDK.
 

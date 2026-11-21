@@ -54,10 +54,10 @@ Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. These
 
 ## Install the current macOS alpha
 
-Latest published alpha: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
+Latest published alpha: **0.1.0-alpha.5**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
 
 1. Open [Releases](https://github.com/DevPicon/kasane/releases) and choose the newest alpha.
-2. Download the DMG for your Mac: `kasane-<version>-macos-arm64.dmg` for Apple Silicon or `kasane-<version>-macos-x64.dmg` for Intel. ZIP alternatives are also available. **About This Mac** identifies your chip.
+2. Download the DMG for your Mac: `kasane-<version>-macos-arm64.dmg` (or `*-notarized.dmg` on `0.1.0-alpha.5`) for Apple Silicon, or `kasane-<version>-macos-x64.dmg` for Intel when available. ZIP alternatives may also be attached. **About This Mac** identifies your chip.
 3. Optionally verify the archive with its matching `.sha256` file:
    ```sh
    shasum -a 256 -c kasane-<version>-macos-arm64.dmg.sha256
@@ -66,11 +66,9 @@ Latest published alpha: **0.1.0-alpha.2**. This is an early `0.x` preview with n
 
 The full version and authorship appear under **Help → Acerca de…** or the native macOS About menu.
 
-Packages include their Java runtime. The preview is **not Developer ID signed or notarized**. macOS may block it; after verifying the source, use the explicit approval in **System Settings → Privacy & Security** as described by [Apple](https://support.apple.com/en-us/102445). Do not disable Gatekeeper globally.
+Packages include their Java runtime. Signed and notarized releases (`0.1.0-alpha.5+`) are verified by Gatekeeper; standard CI PR/main builds remain **ad-hoc signed** and unnotarized, so macOS may require explicit approval in **System Settings → Privacy & Security** as described by [Apple](https://support.apple.com/en-us/102445). Do not disable Gatekeeper globally.
 
-The optional local [Developer ID signing and notarization flow](docs/macos-signing.md) produces a distinct `*-notarized.dmg` only after Apple and Gatekeeper checks succeed. Standard CI artifacts remain ad-hoc builds.
-
-While the repository remains private, releases, Actions and artifacts require repository access; badges may not render for unauthenticated readers. Build and test badges report workflow results, not hand-written “passing” labels.
+The [Developer ID signing and notarization flow](docs/macos-signing.md) documents both local notarization and the trusted CI release workflow.
 
 ## Android SDK requirements
 
@@ -116,6 +114,8 @@ The code uses Kotlin/JVM, Compose Multiplatform Desktop, coroutines and a pinned
 
 Every main-branch build publishes temporary macOS artifacts and test reports in [Actions](https://github.com/DevPicon/kasane/actions). Version tags such as `v0.1.0-alpha.1` run tests and build both macOS packages before publishing release ZIPs and SHA-256 checksums. Versions use [SemVer](https://semver.org/); prereleases are marked as prereleases in GitHub. Use Releases for durable downloads; Actions artifacts expire.
 
-The repository is currently private and **no project license has been granted**. Copyright © 2026 Armando Picón (@devpicon). Third-party components retain their own licenses. Please coordinate contributions with the author before submitting code; public collaboration and licensing terms are still being prepared.
+Kasane is dual-licensed under [AGPL-3.0](LICENSE) for open-source use and a **Commercial License** for proprietary or closed-source commercial distribution (contact `@devpicon` for commercial licensing). Copyright © 2026 Armando Picón (@devpicon). Third-party components retain their own licenses. See [contributing](CONTRIBUTING.md) before opening a pull request.
 
-Useful next steps: Developer ID signing/notarization, broader real-Mac compatibility testing and transport performance measurements. See the [signing and secrets guide](docs/macos-signing.md). Windows and Linux remain future work.
+Support development: [Ko-fi](https://ko-fi.com/devpicon) · [PayPal.Me](https://paypal.me/devpicon)
+
+Useful next steps: broader real-Mac compatibility testing, fixing zero-duration static-screen MP4 recordings, and transport performance measurements. See the [signing and secrets guide](docs/macos-signing.md). Windows and Linux remain future work.

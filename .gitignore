@@ -13,9 +13,15 @@ PROJECT_GUIDE.md
 historias-de-usuario.md
 AGENTS.md
 CLAUDE.md
+GEMINI.md
 .codex/
 .agents/
 .claude/
+.gemini/
+.antigravity/
+.cursor/
+.cursorrules
+.windsurfrules
 .ai/
 .openai/
 design/
