@@ -1,0 +1,229 @@
+# Spanish message ID<TAB>English<TAB>Português. {n} denotes an opaque value, never translated.
+Obtener captura de pantalla	Take screenshot	Obter captura de tela
+Grabar video	Record video	Gravar vídeo
+Detener grabación	Stop recording	Parar gravação
+Guardar grabación	Save recording	Salvar gravação
+Descartar grabación	Discard recording	Descartar gravação
+Grabación pendiente de guardar	Recording awaiting save	Gravação aguardando salvamento
+Finalizando grabación…	Finishing recording…	Finalizando gravação…
+Preparando grabación…	Preparing recording…	Preparando gravação…
+Mostrar taps	Show taps	Mostrar toques
+Guardado: {0}	Saved: {0}	Salvo: {0}
+Guardar grabación MP4	Save recording	Salvar gravação
+Guardar captura PNG	Save screenshot	Salvar captura de tela
+Guarda o descarta la grabación pendiente antes de cerrar.	Save or discard the pending recording before closing.	Salve ou descarte a gravação pendente antes de fechar.
+Idioma	Language	Idioma
+No se pudo guardar el idioma. Se aplicará solo en esta sesión.	Could not save the language. It applies only to this session.	Não foi possível salvar o idioma. Será aplicado apenas nesta sessão.
++ Crear	+ Create	+ Criar
+EMULADORES	EMULATORS	EMULADORES
+Actualizar emuladores	Refresh emulators	Atualizar emuladores
+Emuladores Android	Android emulators	Emuladores Android
+●  Listo	●  Ready	●  Pronto
+Listo	Ready	Pronto
+Apagado	Off	Desligado
+Iniciando	Starting	Iniciando
+Apagando	Stopping	Desligando
+Reiniciando	Restarting	Reiniciando
+Error	Error	Erro
+Iniciar emulador	Start emulator	Iniciar emulador
+Reintentar apagado	Retry shutdown	Tentar desligar novamente
+Volver a conectar	Reconnect	Reconectar
+Diagnóstico…	Diagnostics…	Diagnóstico…
+Apagar	Shut down	Desligar
+Reiniciar	Restart	Reiniciar
+Eliminar…	Delete…	Excluir…
+Operación en curso…	Operation in progress…	Operação em andamento…
+Apaga el emulador para eliminarlo	Shut down the emulator to delete it	Desligue o emulador para excluí-lo
+Opciones de {0}	Options for {0}	Opções de {0}
+¿Eliminar {0}?	Delete {0}?	Excluir {0}?
+Se borrarán permanentemente este emulador, sus aplicaciones, datos y snapshots. Las imágenes Android compartidas del SDK se conservarán.	This emulator, its apps, data and snapshots will be permanently deleted. Shared Android SDK images will be kept.	Este emulador, seus apps, dados e snapshots serão excluídos permanentemente. As imagens Android compartilhadas do SDK serão mantidas.
+Eliminando emulador…	Deleting emulator…	Excluindo emulador…
+Eliminar emulador	Delete emulator	Excluir emulador
+Cancelar	Cancel	Cancelar
+Cerrar	Close	Fechar
+Esperando la salida de los emuladores…	Waiting for emulators to exit…	Aguardando o encerramento dos emuladores…
+Al cerrar el hub se apagarán los emuladores de la lista.	Closing the Hub shuts down the listed emulators.	Fechar o Hub desliga os emuladores da lista.
+Atrás	Back	Voltar
+Inicio	Home	Início
+Recientes	Recent apps	Apps recentes
+Rotar 90°	Rotate 90°	Girar 90°
+Postura {0}	Posture: {0}	Postura: {0}
+Plegado	Folded	Dobrado
+Semiabierto	Half open	Semiaberto
+Abierto	Open	Aberto
+Invertido	Flipped	Invertido
+Tienda	Tent	Tenda
+Teléfono	Handset	Telefone
+Plegable	Foldable	Dobrável
+Tablet	Tablet	Tablet
+Reloj	Watch	Relógio
+TV	TV	TV
+Automóvil	Automotive	Automotivo
+Dispositivo	Device	Dispositivo
+Ayuda	Help	Ajuda
+Acerca de…	About…	Sobre…
+Versión {0} · Preview para macOS	Version {0} · macOS preview	Versão {0} · Prévia para macOS
+Tus emuladores Android en un solo lugar. Cambia de dispositivo, controla sus posturas y comprueba su conexión.	Your Android emulators in one place. Switch devices, control their postures and check their connection.	Seus emuladores Android em um só lugar. Alterne dispositivos, controle suas posturas e verifique a conexão.
+Creado por Armando Picón\n@devpicon en todas las redes	Created by Armando Picón\n@devpicon on all social networks	Criado por Armando Picón\n@devpicon em todas as redes
+Nombre clave: Kasane. Distribución privada de prueba.	Codename: Kasane. Private test distribution.	Nome de código: Kasane. Distribuição privada de teste.
+Repositorio y colaboración	Repository and collaboration	Repositório e colaboração
+© 2026 Armando Picón. Los componentes de terceros conservan sus propias licencias.	© 2026 Armando Picón. Third-party components retain their own licenses.	© 2026 Armando Picón. Componentes de terceiros mantêm suas próprias licenças.
+Crear emulador	Create emulator	Criar emulador
+Elige un perfil y una imagen instalada en este equipo.	Choose a profile and an image installed on this Mac.	Escolha um perfil e uma imagem instalada neste Mac.
+Cargando perfiles e imágenes…	Loading profiles and images…	Carregando perfis e imagens…
+No se pudo cargar el catálogo local.	Could not load the local catalog.	Não foi possível carregar o catálogo local.
+No hay imágenes Android instaladas compatibles con este equipo. Usa Descargar imágenes para instalar una.	No compatible Android images are installed. Use Download images to install one.	Não há imagens Android compatíveis instaladas. Use Baixar imagens para instalar uma.
+No hay perfiles compatibles con las imágenes instaladas y el CLI disponible.	No profiles match the installed images and available CLI.	Nenhum perfil é compatível com as imagens instaladas e a CLI disponível.
+Nombre del AVD	AVD name	Nome do AVD
+Mi_Emulador	My_Emulator	Meu_Emulador
+Perfil de dispositivo	Device profile	Perfil do dispositivo
+Imagen Android	Android image	Imagem Android
+RAM (MB)	RAM (MB)	RAM (MB)
+Almacenamiento (GB)	Storage (GB)	Armazenamento (GB)
+El AVD quedará apagado y aparecerá en tu lista. Puedes ajustar los recursos antes de crearlo.	The AVD will appear in your list powered off. Adjust its resources before creating it.	O AVD aparecerá desligado na lista. Ajuste os recursos antes de criá-lo.
+Descargar imágenes…	Download images…	Baixar imagens…
+Creando el AVD…	Creating AVD…	Criando AVD…
+Recargar	Reload	Recarregar
+Seleccionar	Select	Selecionar
+Imágenes Android	Android images	Imagens Android
+Imágenes estables para {0} y la arquitectura de este Mac.	Stable images for {0} and this Mac's architecture.	Imagens estáveis para {0} e a arquitetura deste Mac.
+Imágenes estables compatibles con la arquitectura de este Mac.	Stable images compatible with this Mac's architecture.	Imagens estáveis compatíveis com a arquitetura deste Mac.
+La descarga instala un paquete compartido del SDK. No crea ni inicia emuladores. El CLI no publica tamaños; se comprueban al menos 6 GB libres antes de instalar.	Downloads install a shared SDK package. They do not create or start emulators. The CLI does not provide sizes; at least 6 GB of free space is checked before installation.	O download instala um pacote compartilhado do SDK. Não cria nem inicia emuladores. A CLI não informa tamanhos; são verificados pelo menos 6 GB livres antes da instalação.
+No se encontraron imágenes compatibles. Revisa la conexión y recarga el catálogo.	No compatible images were found. Check your connection and reload the catalog.	Nenhuma imagem compatível foi encontrada. Verifique a conexão e recarregue o catálogo.
+Instalada	Installed	Instalada
+Disponible para descargar	Available to download	Disponível para download
+Imagen instalada. Ya está disponible en Crear emulador.	Image installed. It is now available in Create emulator.	Imagem instalada. Já está disponível em Criar emulador.
+Cancelar descarga	Cancel download	Cancelar download
+Volver	Back	Voltar
+Descargar imagen	Download image	Baixar imagem
+Diagnóstico del transporte	Transport diagnostics	Diagnóstico do transporte
+Solo se comprueba conectividad. No se guardan frames, tokens ni datos de las aplicaciones.	Only connectivity is checked. Frames, tokens and app data are not saved.	Apenas a conectividade é verificada. Frames, tokens e dados dos apps não são salvos.
+Pendiente…	Pending…	Pendente…
+No comprobado.	Not checked.	Não verificado.
+Transporte disponible	Transport available	Transporte disponível
+Revisa las comprobaciones indicadas	Review the indicated checks	Revise as verificações indicadas
+Reconectar pantalla	Reconnect display	Reconectar tela
+Comprobar de nuevo	Check again	Verificar novamente
+Proceso del emulador	Emulator process	Processo do emulador
+Conexión ADB	ADB connection	Conexão ADB
+Endpoint autenticado	Authenticated endpoint	Endpoint autenticado
+Servicio gRPC	gRPC service	Serviço gRPC
+Primer frame	First frame	Primeiro frame
+Buscando emuladores configurados…	Looking for configured emulators…	Buscando emuladores configurados…
+Apagando emuladores…	Shutting down emulators…	Desligando emuladores…
+Apagando emulador…	Shutting down emulator…	Desligando emulador…
+Reiniciando emulador…	Restarting emulator…	Reiniciando emulador…
+Iniciando Android…	Starting Android…	Iniciando Android…
+Emulador apagado.	Emulator is off.	Emulador desligado.
+No hay AVD configurados. Usa + Crear para agregar uno.	No AVDs are configured. Use + Create to add one.	Nenhum AVD configurado. Use + Criar para adicionar um.
+La pantalla todavía no está disponible.	The display is not available yet.	A tela ainda não está disponível.
+No se pudo iniciar el emulador.	Could not start the emulator.	Não foi possível iniciar o emulador.
+No se pudo guardar. Revisa la conexión, los permisos y el espacio libre.	Could not save. Check the connection, permissions and free space.	Não foi possível salvar. Verifique a conexão, as permissões e o espaço livre.
+El archivo ya existe. Elige un nombre nuevo para conservar el original.	The file already exists. Choose a new name to preserve the original.	O arquivo já existe. Escolha um novo nome para preservar o original.
+La carpeta de destino no está disponible.	The destination folder is unavailable.	A pasta de destino não está disponível.
+Elige una ubicación fuera de la carpeta temporal.	Choose a location outside the temporary folder.	Escolha um local fora da pasta temporária.
+La instancia cambió o se desconectó. Actualiza los emuladores.	The instance changed or disconnected. Refresh the emulators.	A instância mudou ou foi desconectada. Atualize os emuladores.
+Android no devolvió una captura PNG válida.	Android did not return a valid PNG screenshot.	O Android não retornou uma captura PNG válida.
+No se pudo leer la preferencia de taps de Android.	Could not read Android's touch indicator setting.	Não foi possível ler a configuração de indicadores de toque do Android.
+Este emulador no pudo iniciar screenrecord.	This emulator could not start screenrecord.	Este emulador não conseguiu iniciar screenrecord.
+Android no confirmó el inicio de la grabación dentro del plazo.	Android did not confirm recording startup within the time limit.	O Android não confirmou o início da gravação dentro do prazo.
+Android rechazó la grabación. Este display puede no ser compatible.	Android rejected recording. This display may be unsupported.	O Android recusou a gravação. Esta tela pode não ser compatível.
+Android no finalizó la grabación dentro del plazo.	Android did not finish recording within the time limit.	O Android não finalizou a gravação dentro do prazo.
+La grabación se interrumpió; no se guardó un video válido.	Recording was interrupted; no valid video was saved.	A gravação foi interrompida; nenhum vídeo válido foi salvo.
+Android no produjo un archivo MP4 válido.	Android did not produce a valid MP4 file.	O Android não produziu um arquivo MP4 válido.
+No se pudo restaurar Mostrar taps. Revisa Opciones de desarrollador en ese AVD.	Could not restore Show taps. Check Developer options on that AVD.	Não foi possível restaurar Mostrar toques. Verifique as Opções do desenvolvedor nesse AVD.
+No se pudo verificar el proceso de grabación propio.	Could not verify the owned recording process.	Não foi possível verificar o processo da gravação própria.
+La instancia cambió. Actualiza el inventario antes de actuar sobre ella.	The instance changed. Refresh the inventory before acting on it.	A instância mudou. Atualize o inventário antes de agir sobre ela.
+La instancia cambió. Actualiza el inventario antes de reconectar.	The instance changed. Refresh the inventory before reconnecting.	A instância mudou. Atualize o inventário antes de reconectar.
+El AVD ya no está apagado o disponible. Actualiza el inventario.	The AVD is no longer powered off or available. Refresh the inventory.	O AVD não está mais desligado ou disponível. Atualize o inventário.
+No se confirmó el apagado, o hay una instancia nueva. No se iniciará otra.	Shutdown was not confirmed, or a new instance exists. Another will not be started.	O desligamento não foi confirmado ou há uma nova instância. Outra não será iniciada.
+No se pudieron apagar todos los emuladores.	Could not shut down all emulators.	Não foi possível desligar todos os emuladores.
+No se pudo completar la comprobación. Reintenta tras actualizar el inventario.	Could not complete the check. Refresh the inventory and retry.	Não foi possível concluir a verificação. Atualize o inventário e tente novamente.
+Esta acción no está disponible en el dispositivo seleccionado.	This action is unavailable on the selected device.	Esta ação não está disponível no dispositivo selecionado.
+El emulador no confirmó el cambio. Puedes reintentar.	The emulator did not confirm the change. You can retry.	O emulador não confirmou a alteração. Tente novamente.
+No llegó el primer frame. Abre Diagnóstico para comprobar el transporte.	The first frame did not arrive. Open Diagnostics to check the transport.	O primeiro frame não chegou. Abra Diagnóstico para verificar o transporte.
+El stream de pantalla terminó. Abre Diagnóstico para comprobar el transporte.	The display stream ended. Open Diagnostics to check the transport.	O stream da tela terminou. Abra Diagnóstico para verificar o transporte.
+Error de sesión.	Session error.	Erro de sessão.
+No se pudo completar la operación ({0}).	Could not complete the operation ({0}).	Não foi possível concluir a operação ({0}).
+La instancia cambió durante la conexión. Actualiza el inventario y reintenta.	The instance changed while connecting. Refresh the inventory and retry.	A instância mudou durante a conexão. Atualize o inventário e tente novamente.
+Otro proceso de Android Hub está usando esta instancia. Ciérralo antes de conectar.	Another Android Hub process is using this instance. Close it before connecting.	Outro processo do Android Hub está usando esta instância. Feche-o antes de conectar.
+Se perdió la conexión con el emulador. Puedes volver a conectar.	The connection to the emulator was lost. You can reconnect.	A conexão com o emulador foi perdida. Você pode reconectar.
+El emulador cerró la conexión de pantalla.	The emulator closed the display connection.	O emulador encerrou a conexão da tela.
+No se recibió ningún frame.	No frames were received.	Nenhum frame foi recebido.
+La consulta gRPC superó su plazo.	The gRPC request timed out.	A solicitação gRPC excedeu o prazo.
+No se pudo establecer la conexión gRPC local.	Could not establish the local gRPC connection.	Não foi possível estabelecer a conexão gRPC local.
+El emulador rechazó la autenticación gRPC. Esta configuración necesita una integración compatible.	The emulator rejected gRPC authentication. This configuration needs a compatible integration.	O emulador recusou a autenticação gRPC. Esta configuração precisa de uma integração compatível.
+Android todavía no ha publicado la pantalla del dispositivo. Puedes volver a conectar.	Android has not published the device display yet. You can reconnect.	O Android ainda não disponibilizou a tela do dispositivo. Você pode reconectar.
+La instancia ya no está disponible. Actualiza los emuladores.	The instance is no longer available. Refresh the emulators.	A instância não está mais disponível. Atualize os emuladores.
+La instancia no terminó dentro del plazo de apagado.	The instance did not exit within the shutdown time limit.	A instância não foi encerrada dentro do prazo de desligamento.
+El proceso de arranque no terminó dentro del plazo de apagado.	The startup process did not exit within the shutdown time limit.	O processo de inicialização não foi encerrado dentro do prazo de desligamento.
+No hay puertos disponibles para iniciar otro emulador.	No ports are available to start another emulator.	Não há portas disponíveis para iniciar outro emulador.
+El AVD ya no está configurado. Actualiza el inventario.	The AVD is no longer configured. Refresh the inventory.	O AVD não está mais configurado. Atualize o inventário.
+El registro del AVD no es válido para eliminarlo desde el Hub.	The AVD registration is invalid for deletion from the Hub.	O registro do AVD é inválido para exclusão pelo Hub.
+Apaga el emulador antes de eliminarlo.	Shut down the emulator before deleting it.	Desligue o emulador antes de excluí-lo.
+El AVD tiene un bloqueo de uso. Cierra su instancia antes de eliminarlo.	The AVD has an active lock. Close its instance before deleting it.	O AVD possui um bloqueio de uso. Feche a instância antes de excluí-lo.
+El CLI no eliminó todos los archivos del AVD. Revisa su estado antes de reintentar.	The CLI did not delete all AVD files. Check its state before retrying.	A CLI não excluiu todos os arquivos do AVD. Verifique o estado antes de tentar novamente.
+No comprobado: falta un requisito anterior.	Not checked: a previous prerequisite is missing.	Não verificado: falta um pré-requisito anterior.
+El AVD está apagado.	The AVD is powered off.	O AVD está desligado.
+La instancia identificada ya no está activa.	The identified instance is no longer active.	A instância identificada não está mais ativa.
+Proceso activo; identidad verificada.	Process active; identity verified.	Processo ativo; identidade verificada.
+No se encontró ADB en el SDK configurado.	ADB was not found in the configured SDK.	ADB não foi encontrado no SDK configurado.
+ADB reconoce la instancia.	ADB recognizes the instance.	ADB reconhece a instância.
+ADB aún no reconoce una conexión disponible.	ADB does not yet recognize an available connection.	ADB ainda não reconhece uma conexão disponível.
+ADB no pudo comunicarse con la instancia dentro del plazo.	ADB could not communicate with the instance within the time limit.	ADB não conseguiu se comunicar com a instância dentro do prazo.
+La instancia cambió durante la comprobación.	The instance changed during the check.	A instância mudou durante a verificação.
+El proceso no publica todavía un endpoint gRPC local.	The process is not publishing a local gRPC endpoint yet.	O processo ainda não disponibilizou um endpoint gRPC local.
+El endpoint no publica las credenciales esperadas para el transporte autenticado.	The endpoint does not publish the expected authenticated transport credentials.	O endpoint não disponibiliza as credenciais esperadas para o transporte autenticado.
+Endpoint local con autenticación disponible.	Local endpoint with authentication available.	Endpoint local com autenticação disponível.
+El servicio gRPC no respondió dentro del plazo.	The gRPC service did not respond within the time limit.	O serviço gRPC não respondeu dentro do prazo.
+El servicio gRPC respondió a la consulta de estado.	The gRPC service responded to the status request.	O serviço gRPC respondeu à consulta de estado.
+No llegó un frame válido dentro del plazo.	No valid frame arrived within the time limit.	Nenhum frame válido chegou dentro do prazo.
+La instancia terminó durante la comprobación.	The instance exited during the check.	A instância foi encerrada durante a verificação.
+Primer frame válido recibido; su contenido no se conserva en el informe.	First valid frame received; its content is not retained in the report.	Primeiro frame válido recebido; seu conteúdo não é mantido no relatório.
+El stream terminó sin entregar un frame válido.	The stream ended without a valid frame.	O stream terminou sem fornecer um frame válido.
+El servicio rechazó la autenticación. No se muestran credenciales.	The service rejected authentication. Credentials are not displayed.	O serviço recusou a autenticação. As credenciais não são exibidas.
+El servicio no implementa el protocolo solicitado.	The service does not implement the requested protocol.	O serviço não implementa o protocolo solicitado.
+Falló la comprobación del transporte. No se incluyen mensajes internos del servidor.	The transport check failed. Internal server messages are not included.	A verificação do transporte falhou. Mensagens internas do servidor não são incluídas.
+El transporte respondió correctamente. Si la pantalla sigue sin responder, prueba Reconectar pantalla.	The transport responded correctly. If the display still does not respond, try Reconnect display.	O transporte respondeu corretamente. Se a tela ainda não responder, tente Reconectar tela.
+Inicia el emulador y vuelve a comprobar.	Start the emulator and check again.	Inicie o emulador e verifique novamente.
+Espera a que Android termine de arrancar y comprueba ADB antes de reintentar.	Wait for Android to finish booting and check ADB before retrying.	Aguarde a inicialização do Android e verifique o ADB antes de tentar novamente.
+Espera el arranque. Si se inició fuera del Hub sin gRPC autenticado, apágalo e inícialo desde el Hub.	Wait for startup. If launched outside the Hub without authenticated gRPC, shut it down and start it from the Hub.	Aguarde a inicialização. Se foi iniciado fora do Hub sem gRPC autenticado, desligue-o e inicie-o pelo Hub.
+Comprueba la versión de Android Emulator; el protocolo se validó con 36.4.9.	Check the Android Emulator version; the protocol was validated with 36.4.9.	Verifique a versão do Android Emulator; o protocolo foi validado com 36.4.9.
+Espera y reintenta el diagnóstico. Puedes reconectar la pantalla o reiniciar únicamente esta instancia si el fallo persiste.	Wait and retry diagnostics. Reconnect the display or restart only this instance if the failure persists.	Aguarde e tente o diagnóstico novamente. Reconecte a tela ou reinicie apenas esta instância se a falha persistir.
+No se pudo acceder al SDK o al repositorio. Revisa conexión, permisos y espacio libre.	Could not access the SDK or repository. Check connection, permissions and free space.	Não foi possível acessar o SDK ou repositório. Verifique a conexão, as permissões e o espaço livre.
+No se pudo consultar el catálogo. Revisa la conexión y reintenta.	Could not query the catalog. Check your connection and retry.	Não foi possível consultar o catálogo. Verifique a conexão e tente novamente.
+No se pudo instalar la imagen.	Could not install the image.	Não foi possível instalar a imagem.
+La herramienta del SDK superó el plazo. Puedes reintentar.	The SDK tool timed out. You can retry.	A ferramenta do SDK excedeu o prazo. Tente novamente.
+La herramienta terminó sin instalar una imagen válida. Revisa la conexión y reintenta.	The tool finished without installing a valid image. Check your connection and retry.	A ferramenta terminou sem instalar uma imagem válida. Verifique a conexão e tente novamente.
+La imagen ya no está disponible para este equipo. Recarga el catálogo.	The image is no longer available for this Mac. Reload the catalog.	A imagem não está mais disponível para este Mac. Recarregue o catálogo.
+La imagen requiere una licencia pendiente. Revísala y acéptala, si estás de acuerdo, con sdkmanager --licenses en tu SDK; después reintenta. El Hub no acepta licencias automáticamente.	The image requires a pending license. Review and accept it, if you agree, with sdkmanager --licenses in your SDK, then retry. The Hub does not accept licenses automatically.	A imagem exige uma licença pendente. Revise e aceite, se concordar, com sdkmanager --licenses no SDK e tente novamente. O Hub não aceita licenças automaticamente.
+Se requieren al menos 6 GB libres para descargar y extraer la imagen. El espacio final depende del paquete.	At least 6 GB of free space is required to download and extract the image. Final space depends on the package.	São necessários pelo menos 6 GB livres para baixar e extrair a imagem. O espaço final depende do pacote.
+No se pudo crear el AVD.	Could not create the AVD.	Não foi possível criar o AVD.
+No se pudo crear el AVD. Revisa los permisos y el espacio disponible en el SDK y la carpeta de AVD.	Could not create the AVD. Check permissions and free space in the SDK and AVD folder.	Não foi possível criar o AVD. Verifique permissões e espaço livre no SDK e na pasta de AVDs.
+Ya hay otra creación de AVD en curso. Reintenta cuando termine.	Another AVD is being created. Retry when it finishes.	Outro AVD está sendo criado. Tente novamente quando terminar.
+El nombre debe empezar por una letra y usar hasta 64 letras, números, guiones o guiones bajos.	The name must start with a letter and contain up to 64 letters, digits, hyphens or underscores.	O nome deve começar com uma letra e conter até 64 letras, números, hífens ou sublinhados.
+RAM y almacenamiento deben ser números enteros.	RAM and storage must be whole numbers.	RAM e armazenamento devem ser números inteiros.
+La RAM debe estar entre 512 y 16384 MB.	RAM must be between 512 and 16384 MB.	A RAM deve estar entre 512 e 16384 MB.
+El almacenamiento debe estar entre 2 y 64 GB.	Storage must be between 2 and 64 GB.	O armazenamento deve estar entre 2 e 64 GB.
+La imagen no es compatible con el perfil seleccionado.	The image is incompatible with the selected profile.	A imagem não é compatível com o perfil selecionado.
+La imagen ya no está instalada o no es compatible con este equipo.	The image is no longer installed or is incompatible with this Mac.	A imagem não está mais instalada ou não é compatível com este Mac.
+El perfil ya no está disponible en el CLI instalado.	The profile is no longer available in the installed CLI.	O perfil não está mais disponível na CLI instalada.
+avdmanager no generó una configuración válida.	avdmanager did not generate a valid configuration.	avdmanager não gerou uma configuração válida.
+avdmanager no registró el AVD creado.	avdmanager did not register the created AVD.	avdmanager não registrou o AVD criado.
+avdmanager superó el plazo de dos minutos. Puedes reintentar.	avdmanager exceeded the two-minute time limit. You can retry.	avdmanager excedeu o prazo de dois minutos. Tente novamente.
+Falta avdmanager. Instala Android SDK Command-line Tools (latest) o configura ANDROID_HOME.	avdmanager is missing. Install Android SDK Command-line Tools (latest) or configure ANDROID_HOME.	avdmanager não foi encontrado. Instale Android SDK Command-line Tools (latest) ou configure ANDROID_HOME.
+Falta {0}. Instala Android SDK Command-line Tools (latest).	{0} is missing. Install Android SDK Command-line Tools (latest).	{0} não foi encontrado. Instale Android SDK Command-line Tools (latest).
+La operación del SDK falló. {0}	The SDK operation failed. {0}	A operação do SDK falhou. {0}
+No se encontró la instancia solicitada con endpoint gRPC.	The requested instance with a gRPC endpoint was not found.	A instância solicitada com endpoint gRPC não foi encontrada.
+Tipo de dispositivo desconocido	Unknown device type	Tipo de dispositivo desconhecido
+Emulador eliminado.	Emulator deleted.	Emulador excluído.
+Emulador creado. Actualizando inventario…	Emulator created. Refreshing inventory…	Emulador criado. Atualizando inventário…
+Conectando…	Connecting…	Conectando…
+Ya existe un AVD con ese nombre.	An AVD with that name already exists.	Já existe um AVD com esse nome.
+No hay espacio suficiente. Se necesitan al menos {0} GB libres.	Not enough space. At least {0} GB of free space is required.	Espaço insuficiente. São necessários pelo menos {0} GB livres.
+El emulador no pudo arrancar. Puedes reintentar. Los registros están en {0}.	The emulator could not start. You can retry. Logs are at {0}.	O emulador não conseguiu iniciar. Tente novamente. Os logs estão em {0}.
+Faltan Android Emulator o Platform Tools en {0}. Instálalos desde SDK Manager o configura ANDROID_HOME.	Android Emulator or Platform Tools are missing at {0}. Install them with SDK Manager or configure ANDROID_HOME.	Android Emulator ou Platform Tools não foram encontrados em {0}. Instale-os pelo SDK Manager ou configure ANDROID_HOME.
+No se pudo completar la operación. {0}	Could not complete the operation. {0}	Não foi possível concluir a operação. {0}
+¿Descartar esta grabación?	Discard this recording?	Descartar esta gravação?
+El video temporal se eliminará. Esta acción no se puede deshacer.	The temporary video will be deleted. This cannot be undone.	O vídeo temporário será excluído. Esta ação não pode ser desfeita.
+Descartar	Discard	Descartar

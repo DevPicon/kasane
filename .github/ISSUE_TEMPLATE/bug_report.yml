@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible problem with Kasane
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Kasane version, macOS version and architecture, Emulator version, AVD profile and API.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Remove gRPC tokens, endpoint registration files, credentials and private app data before attaching logs or screenshots.
