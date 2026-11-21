@@ -17,7 +17,7 @@ class SystemImagesContentTest {
         val entry = SystemImagePackage(InstalledSystemImage("image", "API 35 · Google APIs", 35, "google_apis", "arm64-v8a"), false)
         val state = mutableStateOf(SystemImagesState(visible = true, packages = listOf(entry), selectedId = "image"))
         val actions = mutableListOf<SystemImagesAction>()
-        compose.setContent { SystemImagesContent(state.value, actions::add, Modifier.size(760.dp, 660.dp)) }
+        compose.setSpanishContent { SystemImagesContent(state.value, actions::add, Modifier.size(760.dp, 660.dp)) }
         compose.onNodeWithText("Descargar imagen").assertIsEnabled().performClick()
         assertEquals(listOf<SystemImagesAction>(SystemImagesAction.Install), actions)
         compose.runOnIdle { state.value = state.value.copy(installing = true, progress = ImageDownloadProgress(25, "Downloading")) }

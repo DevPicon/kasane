@@ -16,9 +16,21 @@ Android Emulator Hub brings your Android virtual devices into a shared workspace
 
 Created by **Armando Picón — [@devpicon](https://github.com/DevPicon)**. Find him as **@devpicon on all social networks**.
 
+## Capture emulator screens
+
+Use the camera and video icons in the top toolbar. Hover over an icon to see its action name, or focus it with the keyboard. A screenshot prompts for a destination. Recording starts immediately in a private temporary file; the red stop square finishes the MP4 and then opens the save dialog. Canceling that dialog keeps the video pending, with Save and Discard actions. Discard asks for confirmation. An existing destination file is preserved, and a failed export keeps the temporary recording available to retry.
+
+**Show taps** controls Android's touch indicators during the video and restores the previous setting before the save dialog. One video can run at a time, pinned to its original emulator even when you select another device. The three-minute limit, individual shutdown/restart and Hub close all finalize recording. Closing remains blocked until a pending video is saved or explicitly discarded. Videos have no audio; rotation and fold posture controls are disabled for the recorded device. Displays without screenrecord support report an error; Android-protected content may appear blank. Captures stay local and do not include the Mac desktop.
+
+Known preview limitation: on the tested Android image, a completely static recording can contain a single frame with zero reported duration. Record interactions when evaluating video capture; preserving elapsed time for idle recordings remains pending.
+
+## Language
+
+English is the initial language, regardless of macOS settings. Choose **English**, **Español** or **Português** in the top-right language selector; the preference is saved locally and changes the interface immediately. AVD names, SDK labels, paths, versions and raw tool output are preserved. Native macOS dialog buttons follow the system language.
+
 ## Screenshots
 
-Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The interface is currently in Spanish. These are application captures, not mockups; the emulator launcher contains no signed-in account.
+Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. These older screenshots show the Spanish interface. These are application captures, not mockups; the emulator launcher contains no signed-in account.
 
 ![Android Emulator Hub showing a live Pixel Fold and contextual posture controls](docs/screenshots/hub-foldable.png)
 
@@ -42,7 +54,7 @@ Real captures from **0.1.0-alpha.1** on macOS with a local Pixel Fold AVD. The i
 
 ## Install the current macOS alpha
 
-Current development version: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
+Latest published alpha: **0.1.0-alpha.2**. This is an early `0.x` preview with no stable compatibility promise. The historical `v1.0.0` tag was numbered incorrectly and is retained only as a legacy preview. Use the newest alpha in Releases.
 
 1. Open [Releases](https://github.com/DevPicon/kasane/releases) and choose the newest alpha.
 2. Download the DMG for your Mac: `kasane-<version>-macos-arm64.dmg` for Apple Silicon or `kasane-<version>-macos-x64.dmg` for Intel. ZIP alternatives are also available. **About This Mac** identifies your chip.
@@ -55,6 +67,8 @@ Current development version: **0.1.0-alpha.2**. This is an early `0.x` preview w
 The full version and authorship appear under **Help → Acerca de…** or the native macOS About menu.
 
 Packages include their Java runtime. The preview is **not Developer ID signed or notarized**. macOS may block it; after verifying the source, use the explicit approval in **System Settings → Privacy & Security** as described by [Apple](https://support.apple.com/en-us/102445). Do not disable Gatekeeper globally.
+
+The optional local [Developer ID signing and notarization flow](docs/macos-signing.md) produces a distinct `*-notarized.dmg` only after Apple and Gatekeeper checks succeed. Standard CI artifacts remain ad-hoc builds.
 
 While the repository remains private, releases, Actions and artifacts require repository access; badges may not render for unauthenticated readers. Build and test badges report workflow results, not hand-written “passing” labels.
 

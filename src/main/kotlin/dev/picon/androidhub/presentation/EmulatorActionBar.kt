@@ -33,6 +33,7 @@ internal fun EmulatorActionBar(
     enabled: Boolean,
     onCommand: (EmulatorCommand) -> Unit,
     modifier: Modifier = Modifier,
+    geometryEnabled: Boolean = true,
 ) {
     Surface(modifier, shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.surface,
         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFCFD3D9))) {
@@ -43,13 +44,13 @@ internal fun EmulatorActionBar(
                 ControlButton("Inicio", EmulatorCommand.Home, enabled, onCommand)
                 ControlButton("Recientes", EmulatorCommand.Recents, enabled, onCommand)
             }
-            if (capabilities.rotation) ControlButton("Rotar 90°", EmulatorCommand.Rotate, enabled, onCommand)
+            if (capabilities.rotation) ControlButton("Rotar 90°", EmulatorCommand.Rotate, enabled && geometryEnabled, onCommand)
             if (capabilities.postures.isNotEmpty()) VerticalDivider(
                 Modifier.height(24.dp).padding(horizontal = 4.dp), color = Color(0xFFCFD3D9),
             )
             capabilities.postures.forEach { available ->
                 ControlButton(
-                    "Postura ${available.label()}", EmulatorCommand.SetPosture(available), enabled, onCommand,
+                    "Postura ${available.label()}", EmulatorCommand.SetPosture(available), enabled && geometryEnabled, onCommand,
                     selected = posture == available,
                 )
             }
@@ -67,17 +68,20 @@ private fun ControlButton(
     modifier: Modifier = Modifier,
     selected: Boolean = false,
 ) {
+    val strings = LocalUiStrings.current
+    val localizedLabel = if (command is EmulatorCommand.SetPosture)
+        strings.text("Postura ${strings.text(command.posture.label())}") else strings.text(label)
     val interactions = remember { MutableInteractionSource() }
     val focused by interactions.collectIsFocusedAsState()
     TooltipArea(tooltip = {
         Surface(shape = RoundedCornerShape(6.dp), shadowElevation = 3.dp) {
-            Text(label, Modifier.padding(8.dp), fontSize = 12.sp)
+            Text(localizedLabel, Modifier.padding(8.dp), fontSize = 12.sp)
         }
     }, modifier = modifier) {
         val buttonModifier = Modifier
             .size(40.dp)
             .semantics {
-                contentDescription = label
+                contentDescription = localizedLabel
                 if (command is EmulatorCommand.SetPosture) this.selected = selected
             }
             .border(if (focused) 2.dp else 0.dp, if (focused) MaterialTheme.colorScheme.primary else Color.Transparent, RoundedCornerShape(8.dp))

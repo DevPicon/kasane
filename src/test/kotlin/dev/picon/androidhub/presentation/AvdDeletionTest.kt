@@ -16,7 +16,7 @@ class AvdDeletionTest {
         val device = AvailableEmulator("Test", "Test AVD", "36", DeviceStatus.OFF)
         val requested = mutableStateOf(false)
         val actions = mutableListOf<HubAction>()
-        compose.setContent { MaterialTheme {
+        compose.setSpanishContent { MaterialTheme {
             DeviceInventoryRow(device, true, true, DeviceInventoryActions({}, { requested.value = true }))
             AvdDeletionDialog(device.takeIf { requested.value }, false, null, actions::add)
         } }
@@ -33,7 +33,7 @@ class AvdDeletionTest {
         val device = mutableStateOf(AvailableEmulator("Test", "Test AVD", "36", DeviceStatus.READY,
             RunningEmulator("emulator-5554", "Test AVD", "instance", "Test")))
         val calls = mutableListOf<String>()
-        compose.setContent { MaterialTheme { DeviceInventoryRow(device.value, true, true,
+        compose.setSpanishContent { MaterialTheme { DeviceInventoryRow(device.value, true, true,
             DeviceInventoryActions({}, {}, { calls += "stop" }, { calls += "restart" })) } }
         compose.onNodeWithContentDescription("Opciones de Test AVD").performClick()
         compose.onNodeWithText("Reiniciar").performClick()
@@ -47,7 +47,7 @@ class AvdDeletionTest {
 
     @Test fun `active emulator cannot be deleted from options`() {
         val device = AvailableEmulator("Test", "Test AVD", "36", DeviceStatus.STARTING)
-        compose.setContent { MaterialTheme { DeviceInventoryRow(device, true, true, DeviceInventoryActions({}, { error("must not delete") })) } }
+        compose.setSpanishContent { MaterialTheme { DeviceInventoryRow(device, true, true, DeviceInventoryActions({}, { error("must not delete") })) } }
         compose.onNodeWithContentDescription("Opciones de Test AVD").performClick()
         compose.onNodeWithText("Apaga el emulador para eliminarlo").assertIsNotEnabled()
     }

@@ -14,7 +14,7 @@ class DiagnosticDialogTest {
     @Test fun `progress can cancel completed report can retry or reconnect explicitly`() {
         val state = mutableStateOf(DiagnosticUiState("A", "Phone", "instance"))
         val actions = mutableListOf<HubAction>()
-        compose.setContent { MaterialTheme { DiagnosticDialog(state.value, true, actions::add) } }
+        compose.setSpanishContent { MaterialTheme { DiagnosticDialog(state.value, true, actions::add) } }
         compose.onNodeWithText("Diagnóstico del transporte").assertExists()
         compose.onNodeWithText("Comprobar de nuevo").assertIsNotEnabled()
         compose.onNodeWithText("Cancelar").performClick()

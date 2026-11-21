@@ -97,6 +97,48 @@ class EmulatorPowerTest {
         assertTrue(controller.state.value.powerErrors.containsKey("A"))
         job.cancelAndJoin()
     }
+    @Test fun `stop and close await recording finalization before powering off`() = runTest {
+        val source = PowerInventory()
+        val finalization = CompletableDeferred<Unit>()
+        var hookTarget: RunningEmulator? = null
+        val controller = HubController(source, beforePowerOff = { hookTarget = it; finalization.await() })
+        val job = launch { controller.run() }; runCurrent()
+        controller.dispatch(HubAction.Stop("B")); runCurrent()
+        assertEquals("B", hookTarget?.avdId)
+        assertTrue(source.stopCalls.isEmpty())
+        finalization.complete(Unit); runCurrent()
+        assertEquals(listOf("B:1"), source.stopCalls)
+        job.cancelAndJoin()
+
+        val shutdownSource = PowerInventory()
+        val closeGate = CompletableDeferred<Unit>()
+        val closing = HubController(shutdownSource, beforeClose = { closeGate.await() })
+        val closeJob = launch { closing.run() }; runCurrent()
+        closing.dispatch(HubAction.Close); runCurrent()
+        assertTrue(shutdownSource.stopCalls.isEmpty())
+        closeGate.complete(Unit); runCurrent()
+        assertTrue(closing.state.value.closed)
+        closeJob.join()
+    }
+    @Test fun `pending export blocks close without disconnecting the live session`() = runTest {
+        val source = PowerInventory()
+        var pending = true
+        val controller = HubController(source, beforeClose = { if (pending) throw PendingCaptureExport("Save pending video") })
+        val runner = launch { controller.run() }; runCurrent()
+        val session = source.sessions.single()
+        controller.dispatch(HubAction.Close); runCurrent()
+        assertFalse(controller.state.value.closing)
+        assertFalse(controller.state.value.closed)
+        assertFalse(session.closed)
+        assertEquals("Save pending video", controller.state.value.message)
+        assertTrue(source.stopCalls.isEmpty())
+        pending = false
+        controller.dispatch(HubAction.Close); runCurrent()
+        assertTrue(controller.state.value.closed)
+        assertTrue(session.closed)
+        runner.join()
+    }
+
 }
 
 private class PowerInventory : EmulatorInventory {

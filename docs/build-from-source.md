@@ -52,3 +52,7 @@ The finalizer refuses to alter a bundle already signed with an identity. Any lat
 Run `./gradlew packageTestDmg` on macOS. It wraps the finalized, ad-hoc signed app in a compressed read-only disk image for the host architecture, verifies it with `hdiutil verify`, and writes a SHA-256 file alongside it under `build/dmg/`. The volume contains the app, an Applications shortcut and test instructions. No Android SDK, system images or AVDs are bundled. The image is for private evaluation and is not Developer ID signed or notarized.
 
 Install by dragging the app to Applications, ejecting the image and opening the installed copy. The full version and author appear under Help → Acerca de… and the native macOS About menu.
+
+For Developer ID builds and Apple notarization, use the explicit local flow in [macOS signing](macos-signing.md). `KASANE_SIGNING_IDENTITY` is a public certificate name; passwords remain in the Keychain. The normal CI/test packaging path stays credential-free.
+
+Close any app running directly from `build/compose/binaries/main/app/` before rebuilding its distribution. Packaging checks whether that exact launcher is in use and stops rather than overwriting a live Java runtime/JAR. Installed copies in other paths can remain open.

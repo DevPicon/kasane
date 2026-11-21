@@ -23,8 +23,9 @@ internal fun FormFactorIcon(
     modifier: Modifier = Modifier,
     color: Color = LocalContentColor.current,
 ) {
+    val label = LocalUiStrings.current.text(formFactor.label())
     Canvas(modifier.semantics {
-        contentDescription = formFactor.label()
+        contentDescription = label
         role = Role.Image
     }) {
         val w = size.width

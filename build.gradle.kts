@@ -48,6 +48,7 @@ protobuf {
 val productVersion = providers.gradleProperty("appVersion").get()
 val productName = providers.gradleProperty("appDisplayName").get()
 val macBuild = providers.gradleProperty("macBundleVersion").get()
+val signingIdentity = providers.environmentVariable("KASANE_SIGNING_IDENTITY")
 val validateVersion by tasks.registering(Exec::class) {
     commandLine("python3", project.file("scripts/check-version.py").absolutePath)
     inputs.files("gradle.properties", "scripts/check-version.py")
@@ -67,6 +68,10 @@ compose.desktop {
                 bundleID = "dev.picon.kasane"
                 packageBuildVersion = macBuild
                 iconFile.set(project.file("assets/icons/hub.icns"))
+                signing {
+                    sign.set(signingIdentity.map { it.isNotBlank() }.orElse(false))
+                    identity.set(signingIdentity)
+                }
                 infoPlist { extraKeysRawXml = "<key>KasaneSemanticVersion</key><string>$productVersion</string>" }
             }
         }
@@ -85,18 +90,32 @@ tasks.register<JavaExec>("probe") {
 }
 
 // jpackage 17 validates its numeric app-version before reading the custom plist.
-// Finalize public metadata and refresh the ad-hoc signature before distribution signing.
+// Compose signs nested code. Finalize metadata and renew the outer signature last.
 tasks.matching { it.name == "createDistributable" }.configureEach {
     dependsOn(validateVersion)
     inputs.file("scripts/finalize-macos-bundle.py")
     inputs.property("semanticVersion", productVersion)
-    doLast {
-        val result = providers.exec {
-            commandLine("python3", project.file("scripts/finalize-macos-bundle.py").absolutePath,
+    inputs.property("signingIdentity", signingIdentity.orElse(""))
+    doFirst {
+        val guard = providers.exec {
+            commandLine("python3", project.file("scripts/check-bundle-not-running.py").absolutePath,
                 layout.buildDirectory.dir("compose/binaries/main/app/$productName.app").get().asFile.absolutePath)
         }
-        result.result.get().assertNormalExitValue()
+        val execution = guard.result.get()
+        if (execution.exitValue != 0) logger.error(guard.standardError.asText.get().trim())
+        execution.assertNormalExitValue()
+    }
+    doLast {
+        val result = providers.exec {
+            val arguments = mutableListOf("python3", project.file("scripts/finalize-macos-bundle.py").absolutePath,
+                layout.buildDirectory.dir("compose/binaries/main/app/$productName.app").get().asFile.absolutePath)
+            signingIdentity.orNull?.takeIf { it.isNotBlank() }?.let { arguments += listOf("--signing-identity", it) }
+            commandLine(arguments)
+        }
+        val execution = result.result.get()
         logger.lifecycle(result.standardOutput.asText.get().trim())
+        if (execution.exitValue != 0) logger.error(result.standardError.asText.get().trim())
+        execution.assertNormalExitValue()
     }
 }
 
@@ -105,5 +124,7 @@ tasks.register<Exec>("packageTestDmg") {
     group = "distribution"
     description = "Create and verify a private test DMG for the host architecture."
     dependsOn("createDistributable")
-    commandLine("python3", project.file("scripts/package-test-dmg.py").absolutePath)
+    val arguments = mutableListOf("python3", project.file("scripts/package-test-dmg.py").absolutePath)
+    signingIdentity.orNull?.takeIf { it.isNotBlank() }?.let { arguments += listOf("--signing-identity", it) }
+    commandLine(arguments)
 }
